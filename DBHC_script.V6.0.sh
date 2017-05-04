@@ -4,20 +4,15 @@
 # Company : Nepasoft Solution                              ##
 # Description :                                            ##
 #############################################################
-#echo -e "\n"  ## for new line.
-
-## Funtions to wrapper scripts
-## array for select choices
-
-############################################################
-# Setting environments
-############################################################
 
 ##
 ## Set Global Variables
 ##
 OS_TYPE=""
 OS_TYPE_STATUS=""
+DBNAME=""
+DBMODE=""
+DBROLE=""
 
 _banner(){
              if [ -z "$1" -a "$1" == " " ]
@@ -106,7 +101,7 @@ checkValidOS(){
 				fi
 		        ;;
 		        'SL')
-				if [ "$actualOS" = "Solaris" ];
+				if [ "$actualOS" = "SunOS" ];
 				then
 				OS_TYPE_STATUS=VALID
 				else
@@ -117,6 +112,37 @@ checkValidOS(){
 }
 
 ##
+## Get the Database name, Open Mode and Database Role
+##
+getDBname(){
+DBNAME=$($1/bin/sqlplus -s /nolog <<END
+set pagesize 0 feedback off verify off echo off;
+connect / as sysdba
+select name from v\$database;
+END
+)
+}
+
+getDBmode(){
+DBMODE=$($1/bin/sqlplus -s /nolog <<END
+set pagesize 0 feedback off verify off echo off;
+connect / as sysdba
+select open_mode from v\$database;
+END
+)
+}
+
+getDBrole(){
+DBROLE=$($1/bin/sqlplus -s /nolog <<END
+set pagesize 0 feedback off verify off echo off;
+connect / as sysdba
+select database_role from v\$database;
+END
+)
+}
+
+
+##
 ## For Warning and Text manupulation
 ##
 bold=$(tput bold)
@@ -125,141 +151,17 @@ bell=$(tput bel)
 underline=$(tput smul)
 
 
-##destdir="/home/oracle/DBHC"
-## 
-## Set the directory to store the logs to be collected .
 ##
-clear
-destdir=`echo $HOME/DBHC`
-
-echo "##########################################################################################"
-echo "##########################################################################################"
-echo "#  _   _                            __ _      _____       _       _   _                  #"
-echo "# | \ | |                          / _| |    / ____|     | |     | | (_)                 #"
-echo "# |  \| | ___  ___  __ _ ___  ___ | |_| |_  | (___   ___ | |_   _| |_ _  ___  _ __  ___  #"
-echo "# | .   |/ _ \/ __|/ _  / __|/ _ \|  _| __|  \___ \ / _ \| | | | | __| |/ _ \| '_ \/ __| #"
-echo "# | |\  |  __/\__ \ (_| \__ \ (_) | | | |_   ____) | (_) | | |_| | |_| | (_) | | | \__ \ #"
-echo "# |_| \_|\___||___/\__,_|___/\___/|_|  \__| |_____/ \___/|_|\__,_|\__|_|\___/|_| |_|___/ #"
-echo "#  _____  ____  _    _  _____    _____  _____ _____  _____ _____ _______                 #"
-echo "# |  __ \|  _ \| |  | |/ ____|  / ____|/ ____|  __ \|_   _|  __ \__   __|                #"
-echo "# | |  | | |_) | |__| | |      | (___ | |    | |__) | | | | |__) | | |                   #"
-echo "# | |  | |  _ <|  __  | |       \___ \| |    |  _  /  | | |  ___/  | |                   #"
-echo "# | |__| | |_) | |  | | |____   ____) | |____| | \ \ _| |_| |      | |                   #"
-echo "# |_____/|____/|_|  |_|\_____| |_____/ \_____|_|  \_\_____|_|      |_|                   #"
-echo "#                                                                                        #"
-echo "#        ${bold}${underline}Nepasoft DBHC SCRIPT For Oracle DATABASE${reset}. Developer: ${bold}${underline}Suman Adhikari${reset}.            #"
-echo "#                                                                                        #"
-echo "##########################################################################################"
-echo "##########################################################################################"
-echo "#  ___              _                     _   ___                            _           #"
-echo "# |   \ _____ _____| |___ _ __  ___ _ _  (_) / __|_  _ _ __  __ _ _ _       /_\          #"
-echo "# | |) / -_) V / -_) / _ \ '_ \/ -_) '_|  _  \__ \ || | '  \/ _  | ' \   _ / _ \         #"
-echo "# |___/\___|\_/\___|_\___/ .__/\___|_|   (_) |___/\_,_|_|_|_\__,_|_||_| (_)_/ \_\        #"
-echo "#                        |_|                         |_|                                 #"
-echo "##########################################################################################"
-echo "##########################################################################################"
-
-echo "--------> Deaflut Directory Used for saving logs and metrics: ${bold}${underline}$destdir${reset}"
-
-#echo -e "\n"
-#if [ -z "$destdir" -a "$destdir" == " " ]
-#        then
-#         _dashBanner
-#		 destdir=/home/oracle/DBHC
-#         #echo " Default destination directory is used:"
-#         #_banner
-#  else
-#        _dashBanner $destdir
-#        #echo "The destination directory for logs is $destdir :"
-#        #_banner
-#fi
-
-#_choiceList(){
-#                if [$1 | $2 -eq 0 ]
-#}
-
+## Functions to spool database metrics based on its status
 ##
-## List the running databases in Server 
-## Enter the database to run the health check up :
 
-myarr=($(ps -ef |grep smon | awk -F'_' '{print $3}'))
-echo "--------> List of Oracle Database Instance running on box: ${bold}${underline}`hostname`${reset}"
+spoolDBFULL(){
 
-for i in "${myarr[@]}"
-	do :
-	echo "-----------> Oracle Database Instance: "${bold}${underline}$i${reset} 
-	done
-printf  'Enter the database instance for which Health Check should be Performed : '
-read -r instance
-
-# Get the environment variables for the respective instance
-# Get the ORACLE sid
-export ORACLE_SID=`echo $instance`
-#ASM=$(cat /etc/oratab | awk -F':' '{print $1}'| grep $instance)
-
-
-## Commented for enhancement of the shell script
-### Get the Database home
-##ORAHOME=$(cat /etc/oratab | awk -F"$instance" '{print $2}'| awk -F':' '{print $2}')
-##
-##	if [ ! -z ${ORAHOME} -a ${ORAHOME} != " " ]
-##		then
-##			export ORAHOME=`echo $ORAHOME`
-##	else 
-##			export ORAHOME=`echo $ORACLE_HOME`
-##	fi
-		
-
-##
-## Get the date and time for name of the folders
-##
-export DATE_TIME=`date +%d_%m_%Y`
-export FILE_NAME=$destdir"/DBarchitecture_"$instance"_DBHC_"$DATE_TIME".log"
-
-## 
-## Handling the exceptions
-## Test if the respective environmental variables are set or not.
-## 
-
-if [[ "${ORACLE_HOME}" = "" ]]
-then
- _errorReport "ORACLE_HOME Environmental variable not Set. Aborting...."
-fi
-
-if [ ! -d ${ORACLE_HOME} ]
-then
- _errorReport "Directory \"${ORACLE_HOME}\" not Valid. Aborting...."
-fi
-
-if [ ! -x ${ORACLE_HOME}/bin/sqlplus ]
-then
- echo "Executable \"${ORACLE_HOME}/bin/sqlplus\" not found; aborting..."
-fi
-
-if [[ "${ORACLE_SID}" = "" ]]
-then
- _errorReport "ORACLE_SID Environmental variable not Set. Aborting...."
-fi
-
-checkSidValid myarr[@] $instance
-
-if [ $? -eq 0 ]
-then
-  _errorReport "ORACLE_SID: ${bell}${bold}${underline}${instance}${reset} is Invalid. Aborting...."
-else
-  echo ""
-fi
-
-
-
-##############################################
-# Log in to the sqlplus session.
-##############################################
-${ORACLE_HOME}/bin/sqlplus /nolog << __EOF__ > /dev/null 2>&1
+${1}/bin/sqlplus /nolog << __EOF__ > /dev/null 2>&1
 
 connect / as sysdba
 
-SPOOL $FILE_NAME
+SPOOL ${2}
 
 set linesize 200
 set pages 100
@@ -655,6 +557,382 @@ ORDER BY
 spool off;
 
 __EOF__
+
+}
+
+
+spoolDBPARTIAL(){
+echo "-----------> Database found on Mounted mode only partial statistics are accumulated."
+${1}/bin/sqlplus /nolog << __EOF__ > /dev/null 2>&1
+connect / as sysdba
+
+SPOOL ${2}
+
+set linesize 200
+set pages 100
+column name format a50
+column comp_name format a50
+column member format a60
+COLUMN FILE_NAME FORMAT A60
+COLUMN TABLESPACE_NAME FORMAT A30
+column platform_name format a30
+
+----************************************
+---- Basic Database Info
+----************************************
+
+select dbid,name, FLASHBACK_ON, PLATFORM_NAME,DATABASE_ROLE from v\$database;
+
+----************************************
+---- List the version of the database 
+----************************************
+
+select * from v\$version;
+
+----********************************************************
+---- List the log groups along with their members and size
+----********************************************************
+
+select a.group#, a.thread#,bytes/(1024*1024) SIZE_MB, b.member from v\$log a, v\$logfile b where a.group#=b.group# order by a.group#;
+
+
+----********************************************************
+---- List the standby log groups with their members and size
+----********************************************************
+
+select a.group#, a.thread#,bytes/(1024*1024) SIZE_MB, b.member from v\$standby_log a, v\$logfile b where a.group#=b.group# order by a.group#;
+
+
+----********************************************************
+---- Control file information
+----********************************************************
+
+select name, STATUS,IS_RECOVERY_DEST_FILE , BLOCK_SIZE, FILE_SIZE_BLKS  from v\$controlfile order by name;
+
+
+----********************************************************
+---- Wallet Information
+----********************************************************
+
+select * from v\$encryption_wallet;
+
+
+----********************************************************
+---- Archive Information
+----********************************************************
+
+archive log list;
+
+
+----********************************************************
+---- last 100 archive sequence status
+----********************************************************
+
+select THREAD#, sequence#, archived, applied from (select THREAD#, sequence#, archived, applied from v\$archived_log order by sequence# desc) where rownum <=100 order by sequence#; 
+
+
+----********************************************************
+---- Dataguard Information 
+----********************************************************
+
+show parameter remote_login
+select force_logging from v\$database;
+show parameter db_name;
+show parameter memory_target;
+show parameter memory_max_target;
+show parameter db_unique_name;
+show parameter archive_lag_target;
+show parameter compatible;
+show parameter control_files;
+show parameter db_create_file_dest;
+show parameter DB_CREATE_ONLINE_LOG_DEST;
+show parameter db_recovery_file_dest;
+show parameter log_archive_config;
+show parameter log_archive_max_processes;
+show parameter log_archive_dest_1;
+show parameter log_archive_dest_state_1;
+show parameter log_archive_dest_2;
+show parameter log_archive_dest_state_2;
+show parameter fal_server;
+show parameter fal_client;
+show parameter standby_file_management;
+show parameter db_file_name_convert;
+show parameter log_file_name_convert;
+
+
+----********************************************************
+---- Check for the redo transport
+----********************************************************
+
+select status , error from v\$archive_dest where dest_id=2;
+
+
+----********************************************************
+---- Rman Backup of Information
+----********************************************************
+
+set linesize 222
+col "Start Time" format a18
+col "End Time" format a18
+col "BK Input Size: MB" format 999,999,999.99
+col "BK Output Size: MB" format 999,999,999.99
+col "Backup To" format a12
+col "Status" format a35
+col "Backup Type" format a20
+col "Total Time" format a10
+
+select to_char(START_TIME,'DD/MM/YYYY HH24:MI') "Start Time", to_char(END_TIME,'DD/MM/YYYY HH24:MI') "End Time",
+round(INPUT_BYTES/1024/1024,2) "BK Input Size: MB",round(OUTPUT_BYTES/1024/1024,2) "BK Output Size: MB",
+OUTPUT_DEVICE_TYPE "Backup To",STATUS "Status",INPUT_TYPE "Backup Type",TIME_TAKEN_DISPLAY "Total Time"
+from V\$RMAN_BACKUP_JOB_DETAILS
+where sysdate - START_TIME < 30 order by 1 desc; 
+
+
+---- ***************************************************
+---- log switch information
+----********************************************************
+
+set pages 999;
+select to_char(first_time,'DD-MON-RR') "Date",
+to_char(sum(decode(to_char(first_time,'HH24'),'00',2,0)),'99') " 00",
+to_char(sum(decode(to_char(first_time,'HH24'),'01',2,0)),'99') " 01",
+to_char(sum(decode(to_char(first_time,'HH24'),'02',2,0)),'99') " 02",
+to_char(sum(decode(to_char(first_time,'HH24'),'03',2,0)),'99') " 03",
+to_char(sum(decode(to_char(first_time,'HH24'),'04',2,0)),'99') " 04",
+to_char(sum(decode(to_char(first_time,'HH24'),'05',2,0)),'99') " 05",
+to_char(sum(decode(to_char(first_time,'HH24'),'06',2,0)),'99') " 06",
+to_char(sum(decode(to_char(first_time,'HH24'),'07',2,0)),'99') " 07",
+to_char(sum(decode(to_char(first_time,'HH24'),'08',2,0)),'99') " 08",
+to_char(sum(decode(to_char(first_time,'HH24'),'09',2,0)),'99') " 09",
+to_char(sum(decode(to_char(first_time,'HH24'),'10',2,0)),'99') " 10",
+to_char(sum(decode(to_char(first_time,'HH24'),'11',2,0)),'99') " 11",
+to_char(sum(decode(to_char(first_time,'HH24'),'12',2,0)),'99') " 12",
+to_char(sum(decode(to_char(first_time,'HH24'),'13',2,0)),'99') " 13",
+to_char(sum(decode(to_char(first_time,'HH24'),'14',2,0)),'99') " 14",
+to_char(sum(decode(to_char(first_time,'HH24'),'15',2,0)),'99') " 15",
+to_char(sum(decode(to_char(first_time,'HH24'),'16',2,0)),'99') " 16",
+to_char(sum(decode(to_char(first_time,'HH24'),'17',2,0)),'99') " 17",
+to_char(sum(decode(to_char(first_time,'HH24'),'18',2,0)),'99') " 18",
+to_char(sum(decode(to_char(first_time,'HH24'),'19',2,0)),'99') " 19",
+to_char(sum(decode(to_char(first_time,'HH24'),'20',2,0)),'99') " 20",
+to_char(sum(decode(to_char(first_time,'HH24'),'21',2,0)),'99') " 21",
+to_char(sum(decode(to_char(first_time,'HH24'),'22',2,0)),'99') " 22",
+to_char(sum(decode(to_char(first_time,'HH24'),'23',2,0)),'99') " 23"
+from v\$log_history
+where first_time-sysdate <30
+group by to_char(first_time,'DD-MON-RR')
+order by 1;
+
+
+
+----********************************************************
+---- ASM Disk Information
+----********************************************************
+
+set linesize 500
+column name format a30
+column COMPATIBILITY format a20
+column DATABASE_COMPATIBILITY format a20
+column FREE_MB format a20
+column type format a20
+
+select GROUP_NUMBER GROUP_NO ,NAME,STATE, TYPE,(TOTAL_MB/(1024)) total_GB  , (FREE_MB/1024) free_GB  from  v\$asm_diskgroup order by group_number, name;
+select GROUP_NUMBER GROUP_NO ,NAME,REQUIRED_MIRROR_FREE_MB ,USABLE_FILE_MB,OFFLINE_DISKS,COMPATIBILITY ,DATABASE_COMPATIBILITY  from v\$asm_diskgroup order by group_number, name;
+
+
+
+----********************************************************
+---- Begin spooling for Memory Advisor
+----********************************************************
+
+select name, open_mode, database_role from v\$database;
+
+show parameter memory;
+
+show parameter sga;
+
+show parameter pga;
+
+select * from v\$memory_target_advice;
+
+select * from v\$sga_target_advice;
+
+select pga_target_for_estimate, pga_target_factor, ESTD_PGA_CACHE_HIT_PERCENTAGE from v\$pga_target_advice;
+
+-- ************************************************
+-- Display pga target advice
+-- ************************************************
+
+SELECT
+   ROUND(pga_target_for_estimate /(1024*1024)) c1,
+   estd_pga_cache_hit_percentage         c2,
+   estd_overalloc_count                  c3
+FROM
+   v\$pga_target_advice;
+
+-- ************************************************
+-- Display pga target advice histogram
+-- ************************************************
+ 
+SELECT
+   low_optimal_size/1024 "Low(K)",
+   (high_optimal_size+1)/1024 "High(K)",
+   estd_optimal_executions "Optimal",
+   estd_onepass_executions "One Pass",
+   estd_multipasses_executions "Multi-Pass"
+FROM
+   v\$pga_target_advice_histogram
+WHERE
+   pga_target_factor = 2
+AND
+   estd_total_executions != 0
+ORDER BY
+   1;
+   
+spool off;
+__EOF__
+
+}
+
+#spoolDBBASIC(){
+#
+#}
+
+#spoolAWRADDM(){
+#
+#}
+
+
+##destdir="/home/oracle/DBHC"
+## 
+## Set the directory to store the logs to be collected .
+##
+clear
+destdir=`echo $HOME/DBHC`
+
+echo "##########################################################################################"
+echo "##########################################################################################"
+echo "#  _   _                            __ _      _____       _       _   _                  #"
+echo "# | \ | |                          / _| |    / ____|     | |     | | (_)                 #"
+echo "# |  \| | ___  ___  __ _ ___  ___ | |_| |_  | (___   ___ | |_   _| |_ _  ___  _ __  ___  #"
+echo "# | .   |/ _ \/ __|/ _  / __|/ _ \|  _| __|  \___ \ / _ \| | | | | __| |/ _ \| '_ \/ __| #"
+echo "# | |\  |  __/\__ \ (_| \__ \ (_) | | | |_   ____) | (_) | | |_| | |_| | (_) | | | \__ \ #"
+echo "# |_| \_|\___||___/\__,_|___/\___/|_|  \__| |_____/ \___/|_|\__,_|\__|_|\___/|_| |_|___/ #"
+echo "#  _____  ____  _    _  _____    _____  _____ _____  _____ _____ _______                 #"
+echo "# |  __ \|  _ \| |  | |/ ____|  / ____|/ ____|  __ \|_   _|  __ \__   __|                #"
+echo "# | |  | | |_) | |__| | |      | (___ | |    | |__) | | | | |__) | | |                   #"
+echo "# | |  | |  _ <|  __  | |       \___ \| |    |  _  /  | | |  ___/  | |                   #"
+echo "# | |__| | |_) | |  | | |____   ____) | |____| | \ \ _| |_| |      | |                   #"
+echo "# |_____/|____/|_|  |_|\_____| |_____/ \_____|_|  \_\_____|_|      |_|                   #"
+echo "#                                                                                        #"
+echo "#        ${bold}${underline}Nepasoft DBHC SCRIPT For Oracle DATABASE${reset}. Developer: ${bold}${underline}Suman Adhikari${reset}.            #"
+echo "#                                                                                        #"
+#echo "##########################################################################################"
+echo "##########################################################################################"
+echo "#  ___              _                     _   ___                            _           #"
+echo "# |   \ _____ _____| |___ _ __  ___ _ _  (_) / __|_  _ _ __  __ _ _ _       /_\          #"
+echo "# | |) / -_) V / -_) / _ \ '_ \/ -_) '_|  _  \__ \ || | '  \/ _  | ' \   _ / _ \         #"
+echo "# |___/\___|\_/\___|_\___/ .__/\___|_|   (_) |___/\_,_|_|_|_\__,_|_||_| (_)_/ \_\        #"
+echo "#                        |_|                         |_|                                 #"
+echo "##########################################################################################"
+echo "##########################################################################################"
+
+echo "--------> Deaflut Directory Used for saving logs and metrics: ${bold}${underline}$destdir${reset}"
+
+#_choiceList(){
+#                if [$1 | $2 -eq 0 ]
+#}
+
+##
+## List the running databases in Server 
+## Enter the database to run the health check up :
+
+myarr=($(ps -ef |grep smon | awk -F'_' '{print $3}'))
+echo "--------> List of Oracle Database Instance running on box: ${bold}${underline}`hostname`${reset}"
+
+for i in "${myarr[@]}"
+	do :
+	echo "-----------> Oracle Database Instance: "${bold}${underline}$i${reset} 
+	done
+printf  'Enter the database instance for which Health Check should be Performed : '
+read -r instance
+
+# Get the environment variables for the respective instance
+# Get the ORACLE sid
+export ORACLE_SID=`echo $instance`
+
+##
+## Get the date and time for name of the folders
+##
+export DATE_TIME=`date +%d_%m_%Y`
+export FILE_NAME=$destdir"/DBarchitecture_"$instance"_DBHC_"$DATE_TIME".log"
+
+## 
+## Handling the exceptions
+## Test if the respective environmental variables are set or not.
+## 
+
+if [[ "${ORACLE_HOME}" = "" ]]
+then
+ _errorReport "ORACLE_HOME Environmental variable not Set. Aborting...."
+fi
+
+if [ ! -d ${ORACLE_HOME} ]
+then
+ _errorReport "Directory \"${ORACLE_HOME}\" not Valid. Aborting...."
+fi
+
+if [ ! -x ${ORACLE_HOME}/bin/sqlplus ]
+then
+ echo "Executable \"${ORACLE_HOME}/bin/sqlplus\" not found; aborting..."
+fi
+
+if [[ "${ORACLE_SID}" = "" ]]
+then
+ _errorReport "ORACLE_SID Environmental variable not Set. Aborting...."
+fi
+
+checkSidValid myarr[@] $instance
+
+if [ $? -eq 0 ]
+then
+  _errorReport "ORACLE_SID: ${bell}${bold}${underline}${instance}${reset} is Invalid. Aborting...."
+else
+   dummy=0
+fi
+
+##
+## Get the type of instance and retrun the database type
+##
+getDBname $ORACLE_HOME
+getDBmode $ORACLE_HOME
+getDBrole $ORACLE_HOME
+
+echo "-----------> Selected Database/Instance: "${bold}${underline}$DBNAME${reset}" / "${bold}${underline}$instance${reset}
+echo "-----------> Selected Database Open Mode: "${bold}${underline}$DBMODE${reset}
+echo "-----------> Selected Database Role: "${bold}${underline}$DBROLE${reset}
+
+##
+## Collect the database stats based on its status
+##
+if [ "$DBMODE" = "READ WRITE" ] && [ "$DBROLE" = "PRIMARY" ];
+	then
+	spoolDBFULL $ORACLE_HOME $FILE_NAME
+
+elif [ "$DBMODE" = "MOUNTED" ] && [ "$DBROLE" = "PRIMARY" ];
+	then
+	spoolDBPARTIAL $ORACLE_HOME $FILE_NAME
+
+elif [ "$DBMODE" = "MOUNTED" ] && [ "$DBROLE" = "PHYSICAL STANDBY" ];
+	then
+	spoolDBPARTIAL $ORACLE_HOME $FILE_NAME
+
+elif [ "$DBMODE" = "READ WRITE" ] && [ "$DBROLE" = "PHYSICAL STANDBY" ];
+	then
+	spoolDBFULL $ORACLE_HOME $FILE_NAME
+else 
+	echo "Database status and open mode cannot be detected."
+fi
 
 # Clear the screen
 clear
