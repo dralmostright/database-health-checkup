@@ -31,4 +31,4 @@ The script also collects the logs and metrics for ORACLe clusterware. The log co
 
 The Logs and files are collected with successful execution of Script in below hierarchy.
 
-![Alt text](img/10.png?raw=true "Snapshot prompting to collect RAC logs.")
+![Alt text](img/9.png?raw=true "Snapshot prompting to collect RAC logs.")
