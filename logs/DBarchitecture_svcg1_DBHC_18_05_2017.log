@@ -1,0 +1,1008 @@
+SQL> 
+SQL> set linesize 200
+SQL> set pages 100
+SQL> column name format a50
+SQL> column comp_name format a50
+SQL> column member format a60
+SQL> COLUMN FILE_NAME FORMAT A60
+SQL> COLUMN TABLESPACE_NAME FORMAT A30
+SQL> column platform_name format a30
+SQL> 
+SQL> ----************************************
+SQL> ---- Basic Database Info
+SQL> ----************************************
+SQL> 
+SQL> select dbid,name, FLASHBACK_ON, PLATFORM_NAME,DATABASE_ROLE from v$database;
+
+      DBID NAME                                               FLASHBACK_ON       PLATFORM_NAME                  DATABASE_ROLE                                                                           
+---------- -------------------------------------------------- ------------------ ------------------------------ ----------------                                                                        
+4106146248 SVCG                                               NO                 Linux x86 64-bit               PRIMARY                                                                                 
+
+SQL> 
+SQL> ----************************************
+SQL> ---- List the version of the database
+SQL> ----************************************
+SQL> 
+SQL> select * from v$version;
+
+BANNER                                                                                                                                                                                                  
+--------------------------------------------------------------------------------                                                                                                                        
+Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production                                                                                                                            
+PL/SQL Release 11.2.0.4.0 - Production                                                                                                                                                                  
+CORE	11.2.0.4.0	Production                                                                                                                                                                              
+TNS for Linux: Version 11.2.0.4.0 - Production                                                                                                                                                          
+NLSRTL Version 11.2.0.4.0 - Production                                                                                                                                                                  
+
+SQL> 
+SQL> ----************************************
+SQL> ---- List the components of dba registry
+SQL> ----************************************
+SQL> 
+SQL> select comp_name, version, status from dba_registry order by comp_name;
+
+COMP_NAME                                          VERSION                        STATUS                                                                                                                
+-------------------------------------------------- ------------------------------ -----------                                                                                                           
+JServer JAVA Virtual Machine                       11.2.0.4.0                     VALID                                                                                                                 
+OLAP Analytic Workspace                            11.2.0.4.0                     VALID                                                                                                                 
+OLAP Catalog                                       11.2.0.4.0                     VALID                                                                                                                 
+OWB                                                11.2.0.4.0                     VALID                                                                                                                 
+Oracle Application Express                         3.2.1.00.12                    VALID                                                                                                                 
+Oracle Database Catalog Views                      11.2.0.4.0                     VALID                                                                                                                 
+Oracle Database Java Packages                      11.2.0.4.0                     VALID                                                                                                                 
+Oracle Database Packages and Types                 11.2.0.4.0                     VALID                                                                                                                 
+Oracle Enterprise Manager                          11.2.0.4.0                     VALID                                                                                                                 
+Oracle Expression Filter                           11.2.0.4.0                     VALID                                                                                                                 
+Oracle Multimedia                                  11.2.0.4.0                     VALID                                                                                                                 
+Oracle OLAP API                                    11.2.0.4.0                     VALID                                                                                                                 
+Oracle Real Application Clusters                   11.2.0.4.0                     VALID                                                                                                                 
+Oracle Rules Manager                               11.2.0.4.0                     VALID                                                                                                                 
+Oracle Text                                        11.2.0.4.0                     VALID                                                                                                                 
+Oracle Workspace Manager                           11.2.0.4.0                     VALID                                                                                                                 
+Oracle XDK                                         11.2.0.4.0                     VALID                                                                                                                 
+Oracle XML Database                                11.2.0.4.0                     VALID                                                                                                                 
+Spatial                                            11.2.0.4.0                     VALID                                                                                                                 
+
+19 rows selected.
+
+SQL> 
+SQL> 
+SQL> ----************************************
+SQL> ---- View the database size and its usage
+SQL> ----************************************
+SQL> 
+SQL> col "Used Percentage" format a15
+SQL> col "Free Percentage" format a15
+SQL> 
+SQL> select "Size in GB O/S level", ("Size in GB O/S level"- "Total Free in GB") "Size in GB Database Level",("Total Free in GB") "Total Free in GB DB Level",
+  2  trunc((("Size in GB O/S level"- "Total Free in GB")/ "Size in GB O/S level")*100,2)||'%' "Used Percentage",trunc(("Total Free in GB"/ "Size in GB O/S level")*100,2)||'%' "Free Percentage"
+  3  from
+  4  (select
+  5  round(( select sum(bytes)/1024/1024/1024 data_size from dba_data_files ) +
+  6  ( select nvl(sum(bytes),0)/1024/1024/1024 temp_size from dba_temp_files ) +
+  7  ( select sum(bytes)/1024/1024/1024 redo_size from sys.v_$log ) +
+  8  ( select sum(BLOCK_SIZE*FILE_SIZE_BLKS)/1024/1024/1024 controlfile_size from v$controlfile),2) "Size in GB O/S level",
+  9  (select sum(round("Free in MB",2)) from (select tablespace_name ,
+ 10  sum( bytes /(1024*1024*1024)) "Free in MB"  from dba_free_space
+ 11  group by tablespace_name) ts join (select tablespace_name , sum( bytes/(1024*1024)) "Total in MB"
+ 12  from dba_data_files group by tablespace_name) using ( tablespace_name))  "Total Free in GB"
+ 13  from
+ 14  dual);
+
+Size in GB O/S level Size in GB Database Level Total Free in GB DB Level Used Percentage Free Percentage                                                                                                
+-------------------- ------------------------- ------------------------- --------------- ---------------                                                                                                
+                2.42                      2.12                        .3 87.6%           12.39%                                                                                                         
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- List the log groups along with their members and size
+SQL> ----********************************************************
+SQL> 
+SQL> select a.group#, a.thread#,bytes/(1024*1024) SIZE_MB, b.member from v$log a, v$logfile b where a.group#=b.group# order by a.group#;
+
+    GROUP#    THREAD#    SIZE_MB MEMBER                                                                                                                                                                 
+---------- ---------- ---------- ------------------------------------------------------------                                                                                                           
+         1          1         50 +ORADATA/svcg/onlinelog/group_1.262.918325517                                                                                                                          
+         2          1         50 +ORADATA/svcg/onlinelog/group_2.261.918325517                                                                                                                          
+         3          2         50 +ORADATA/svcg/onlinelog/group_3.258.918325843                                                                                                                          
+         4          2         50 +ORADATA/svcg/onlinelog/group_4.257.918325843                                                                                                                          
+
+SQL> 
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- List the standby log groups with their members and size
+SQL> ----********************************************************
+SQL> 
+SQL> select a.group#, a.thread#,bytes/(1024*1024) SIZE_MB, b.member from v$standby_log a, v$logfile b where a.group#=b.group# order by a.group#;
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- List the tablespace info and its usage
+SQL> ----********************************************************
+SQL> 
+SQL> column "Tablespace" format a25
+SQL> column "Total Size in MB" format 999,999,999.99
+SQL> column "Total Used in MB" format 999,999,999.99
+SQL> column "Total free in MB" format 999,999,999.99
+SQL> column "Used %" format a6
+SQL> column "Free %" format a6
+SQL> 
+SQL> select tablespace_name "Tablespace",
+  2  round("Total in MB",2) "Total Size in MB",
+  3  round("Free in MB",2) "Total Free in MB",
+  4  round("Total in MB" - "Free in MB", 2) as "Total Used in MB",
+  5  round((("Total in MB" - "Free in MB")/"Total in MB")*100,2)||'%' as "Used %",
+  6  (round(100-(("Total in MB" - "Free in MB")/"Total in MB")*100,2))||'%' as "Free %"
+  7  from (select tablespace_name ,
+  8  sum( bytes /(1024*1024)) "Free in MB"  from dba_free_space
+  9  group by tablespace_name) ts join (select tablespace_name , sum( bytes/(1024*1024)) "Total in MB"
+ 10  from dba_data_files group by tablespace_name) using ( tablespace_name) order by 4 desc;
+
+Tablespace                Total Size in MB Total Free in MB Total Used in MB Used % Free %                                                                                                              
+------------------------- ---------------- ---------------- ---------------- ------ ------                                                                                                              
+SYSAUX                              860.00            43.44           816.56 94.95% 5.05%                                                                                                               
+SYSTEM                              800.00            37.88           762.13 95.27% 4.73%                                                                                                               
+EXAMPLE                             345.63            35.75           309.88 89.66% 10.34%                                                                                                              
+UNDOTBS1                            100.00            86.75            13.25 13.25% 86.75%                                                                                                              
+UNDOTBS2                            125.00           114.63            10.38 8.3%   91.7%                                                                                                               
+USERS                                 5.00              .94             4.06 81.25% 18.75%                                                                                                              
+
+6 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- List the data files its size and other properties
+SQL> ----********************************************************
+SQL> 
+SQL> column TABLESPACE_NAME format a20
+SQL> column file_name format a50
+SQL> column "Size: GB" format  999,999.99
+SQL> column "Extend By" format  999,999.99
+SQL> column "Max Size: GB" format  999,999.99
+SQL> column "Free Space: GB" format  999,999.99
+SQL> 
+SQL> select ddf.tablespace_name,file_name,autoextensible,ONLINE_STATUS,"Extend By", "Size: GB", "Max Size: GB", "Free Space: GB" from
+  2  (select tablespace_name,file_id , (bytes/1024/1024/1024) "Size: GB",file_name,INCREMENT_BY/1024/1024*1024*8 "Extend By",
+  3  ONLINE_STATUS, status,autoextensible, (MAXBYTES/1024/1024/1024) "Max Size: GB"
+  4  from dba_data_files) ddf
+  5  join
+  6  (select file_id, round(sum(BYTES/1024/1024/1024),2) "Free Space: GB" from DBA_FREE_SPACE group by file_id) dfs using (file_id)
+  7  order by 1;
+
+TABLESPACE_NAME      FILE_NAME                                          AUT ONLINE_   Extend By    Size: GB Max Size: GB Free Space: GB                                                                 
+-------------------- -------------------------------------------------- --- ------- ----------- ----------- ------------ --------------                                                                 
+EXAMPLE              +ORADATA/svcg/datafile/example.264.918325547       YES ONLINE          .63         .34        32.00            .03                                                                 
+SYSAUX               +ORADATA/svcg/datafile/sysaux.260.918325423        YES ONLINE        10.00         .84        32.00            .04                                                                 
+SYSTEM               +ORADATA/svcg/datafile/system.268.918325423        YES SYSTEM        10.00         .78        32.00            .04                                                                 
+UNDOTBS1             +ORADATA/svcg/datafile/undotbs1.263.918325425      YES ONLINE         5.00         .10        32.00            .08                                                                 
+UNDOTBS2             +ORADATA/svcg/datafile/undotbs2.259.918325719      YES ONLINE        25.00         .12        32.00            .11                                                                 
+USERS                +ORADATA/svcg/datafile/users.267.918325425         YES ONLINE         1.25         .00        32.00            .00                                                                 
+
+6 rows selected.
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Control file information
+SQL> ----********************************************************
+SQL> 
+SQL> select name, STATUS,IS_RECOVERY_DEST_FILE , BLOCK_SIZE, FILE_SIZE_BLKS  from v$controlfile order by name;
+
+NAME                                               STATUS  IS_ BLOCK_SIZE FILE_SIZE_BLKS                                                                                                                
+-------------------------------------------------- ------- --- ---------- --------------                                                                                                                
++ORADATA/svcg/controlfile/current.266.918325513            NO       16384           1134                                                                                                                
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Health of system and sysaux tablespaces
+SQL> ----********************************************************
+SQL> 
+SQL> select sum(bytes/1024/1024) from dba_segments
+  2  where tablespace_name = 'SYSTEM'
+  3  and owner not in ('SYS','SYSTEM');
+
+SUM(BYTES/1024/1024)                                                                                                                                                                                    
+--------------------                                                                                                                                                                                    
+               .5625                                                                                                                                                                                    
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Select the space of system tablespace consumed by users other then sys and system
+SQL> ----********************************************************
+SQL> 
+SQL> select owner, segment_name, segment_type
+  2  from dba_segments
+  3  where tablespace_name = 'SYSTEM'
+  4  and owner not in ('SYS','SYSTEM');
+
+OWNER                          SEGMENT_NAME                                                                      SEGMENT_TYPE                                                                           
+------------------------------ --------------------------------------------------------------------------------- ------------------                                                                     
+OUTLN                          OL$                                                                               TABLE                                                                                  
+OUTLN                          OL$HINTS                                                                          TABLE                                                                                  
+OUTLN                          OL$HNT_NUM                                                                        INDEX                                                                                  
+OUTLN                          OL$NAME                                                                           INDEX                                                                                  
+OUTLN                          OL$NODES                                                                          TABLE                                                                                  
+OUTLN                          OL$NODE_OL_NAME                                                                   INDEX                                                                                  
+OUTLN                          OL$SIGNATURE                                                                      INDEX                                                                                  
+OUTLN                          SYS_IL0000000474C00021$$                                                          LOBINDEX                                                                               
+OUTLN                          SYS_LOB0000000474C00021$$                                                         LOBSEGMENT                                                                             
+
+9 rows selected.
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ------ Temporary Tablespace in Database
+SQL> ----********************************************************
+SQL> 
+SQL> select tablespace_name, sum(bytes)/1024/1024 "Size in MB"
+  2  from dba_temp_files
+  3  group by tablespace_name;
+
+TABLESPACE_NAME      Size in MB                                                                                                                                                                         
+-------------------- ----------                                                                                                                                                                         
+TEMP                         25                                                                                                                                                                         
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Users Information
+SQL> ----********************************************************
+SQL> 
+SQL> select username, default_tablespace, temporary_tablespace, account_status,EXPIRY_DATE from dba_users order by username;
+
+USERNAME                       DEFAULT_TABLESPACE             TEMPORARY_TABLESPACE           ACCOUNT_STATUS                   EXPIRY_DA                                                                 
+------------------------------ ------------------------------ ------------------------------ -------------------------------- ---------                                                                 
+ANONYMOUS                      SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+APEX_030200                    SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+APEX_PUBLIC_USER               USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+APPQOSSYS                      SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+BI                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+CTXSYS                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+DBSNMP                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+DIP                            USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+EXFSYS                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+FLOWS_FILES                    SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+HR                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+IX                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+MDDATA                         USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+MDSYS                          SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+MGMT_VIEW                      SYSTEM                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+OE                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+OLAPSYS                        SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+ORACLE_OCM                     USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+ORDDATA                        SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+ORDPLUGINS                     SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+ORDSYS                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+OUTLN                          SYSTEM                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+OWBSYS                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+OWBSYS_AUDIT                   SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+PM                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+SCOTT                          USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+SH                             USERS                          TEMP                           EXPIRED & LOCKED                 27-JUL-16                                                                 
+SI_INFORMTN_SCHEMA             SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+SPATIAL_CSW_ADMIN_USR          USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+SPATIAL_WFS_ADMIN_USR          USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+SUMAN                          USERS                          TEMP                           OPEN                             14-MAR-17                                                                 
+SYS                            SYSTEM                         TEMP                           OPEN                             23-JAN-17                                                                 
+SYSMAN                         SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+SYSTEM                         SYSTEM                         TEMP                           OPEN                             23-JAN-17                                                                 
+VIKRAM                         USERS                          TEMP                           OPEN                             14-MAR-17                                                                 
+WMSYS                          SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+XDB                            SYSAUX                         TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+XS$NULL                        USERS                          TEMP                           EXPIRED & LOCKED                 24-AUG-13                                                                 
+
+38 rows selected.
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Wallet Information
+SQL> ----********************************************************
+SQL> 
+SQL> select * from v$encryption_wallet;
+
+WRL_TYPE                                                                                                                                                                                                
+--------------------                                                                                                                                                                                    
+WRL_PARAMETER                                                                                                                                                                                           
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+STATUS                                                                                                                                                                                                  
+------------------                                                                                                                                                                                      
+file                                                                                                                                                                                                    
+/u01/app/oracle/admin/svcg/wallet                                                                                                                                                                       
+CLOSED                                                                                                                                                                                                  
+                                                                                                                                                                                                        
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Archive Information
+SQL> ----********************************************************
+SQL> 
+SQL> archive log list;
+Database log mode              Archive Mode
+Automatic archival             Enabled
+Archive destination            +ORAFRA/archive
+Oldest online log sequence     134
+Next log sequence to archive   135
+Current log sequence           135
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- last 15 days archive status
+SQL> ----********************************************************
+SQL> 
+SQL> select to_char(COMPLETION_TIME,'DD/MM/YYYY HH24:MI:SS') "Archived Date",sequence#, archived, applied from v$archived_log where COMPLETION_TIME >= sysdate -3 order by sequence#;
+
+Archived Date        SEQUENCE# ARC APPLIED                                                                                                                                                              
+------------------- ---------- --- ---------                                                                                                                                                            
+16/05/2017 13:45:07         72 YES NO                                                                                                                                                                   
+17/05/2017 14:45:11         73 YES NO                                                                                                                                                                   
+18/05/2017 11:45:36         74 YES NO                                                                                                                                                                   
+15/05/2017 20:45:32        128 YES NO                                                                                                                                                                   
+15/05/2017 22:03:25        129 YES NO                                                                                                                                                                   
+16/05/2017 18:45:43        130 YES NO                                                                                                                                                                   
+16/05/2017 22:02:21        131 YES NO                                                                                                                                                                   
+17/05/2017 15:53:15        132 YES NO                                                                                                                                                                   
+17/05/2017 22:02:12        133 YES NO                                                                                                                                                                   
+18/05/2017 11:45:32        134 YES NO                                                                                                                                                                   
+
+10 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- last 100 archive sequence status
+SQL> ----********************************************************
+SQL> 
+SQL> select THREAD#, sequence#, archived, applied from (select THREAD#, sequence#, archived, applied from v$archived_log order by sequence# desc) where rownum <=100 order by sequence#;
+
+   THREAD#  SEQUENCE# ARC APPLIED                                                                                                                                                                       
+---------- ---------- --- ---------                                                                                                                                                                     
+         2         46 YES NO                                                                                                                                                                            
+         2         47 YES NO                                                                                                                                                                            
+         2         48 YES NO                                                                                                                                                                            
+         2         49 YES NO                                                                                                                                                                            
+         2         50 YES NO                                                                                                                                                                            
+         2         51 YES NO                                                                                                                                                                            
+         2         52 YES NO                                                                                                                                                                            
+         2         53 YES NO                                                                                                                                                                            
+         2         54 YES NO                                                                                                                                                                            
+         2         55 YES NO                                                                                                                                                                            
+         2         56 YES NO                                                                                                                                                                            
+         2         57 YES NO                                                                                                                                                                            
+         2         58 YES NO                                                                                                                                                                            
+         2         59 YES NO                                                                                                                                                                            
+         2         60 YES NO                                                                                                                                                                            
+         2         61 YES NO                                                                                                                                                                            
+         2         62 YES NO                                                                                                                                                                            
+         2         63 YES NO                                                                                                                                                                            
+         2         64 YES NO                                                                                                                                                                            
+         1         64 YES NO                                                                                                                                                                            
+         1         65 YES NO                                                                                                                                                                            
+         2         65 YES NO                                                                                                                                                                            
+         2         66 YES NO                                                                                                                                                                            
+         1         66 YES NO                                                                                                                                                                            
+         1         67 YES NO                                                                                                                                                                            
+         2         67 YES NO                                                                                                                                                                            
+         1         68 YES NO                                                                                                                                                                            
+         2         68 YES NO                                                                                                                                                                            
+         2         69 YES NO                                                                                                                                                                            
+         1         69 YES NO                                                                                                                                                                            
+         2         70 YES NO                                                                                                                                                                            
+         1         70 YES NO                                                                                                                                                                            
+         1         71 YES NO                                                                                                                                                                            
+         2         71 YES NO                                                                                                                                                                            
+         1         72 YES NO                                                                                                                                                                            
+         2         72 YES NO                                                                                                                                                                            
+         2         73 YES NO                                                                                                                                                                            
+         1         73 YES NO                                                                                                                                                                            
+         1         74 YES NO                                                                                                                                                                            
+         2         74 YES NO                                                                                                                                                                            
+         1         75 YES NO                                                                                                                                                                            
+         1         76 YES NO                                                                                                                                                                            
+         1         77 YES NO                                                                                                                                                                            
+         1         78 YES NO                                                                                                                                                                            
+         1         79 YES NO                                                                                                                                                                            
+         1         80 YES NO                                                                                                                                                                            
+         1         81 YES NO                                                                                                                                                                            
+         1         82 YES NO                                                                                                                                                                            
+         1         83 YES NO                                                                                                                                                                            
+         1         84 YES NO                                                                                                                                                                            
+         1         85 YES NO                                                                                                                                                                            
+         1         86 YES NO                                                                                                                                                                            
+         1         87 YES NO                                                                                                                                                                            
+         1         88 YES NO                                                                                                                                                                            
+         1         89 YES NO                                                                                                                                                                            
+         1         90 YES NO                                                                                                                                                                            
+         1         91 YES NO                                                                                                                                                                            
+         1         92 YES NO                                                                                                                                                                            
+         1         93 YES NO                                                                                                                                                                            
+         1         94 YES NO                                                                                                                                                                            
+         1         95 YES NO                                                                                                                                                                            
+         1         96 YES NO                                                                                                                                                                            
+         1         97 YES NO                                                                                                                                                                            
+         1         98 YES NO                                                                                                                                                                            
+         1         99 YES NO                                                                                                                                                                            
+         1        100 YES NO                                                                                                                                                                            
+         1        101 YES NO                                                                                                                                                                            
+         1        102 YES NO                                                                                                                                                                            
+         1        103 YES NO                                                                                                                                                                            
+         1        104 YES NO                                                                                                                                                                            
+         1        105 YES NO                                                                                                                                                                            
+         1        106 YES NO                                                                                                                                                                            
+         1        107 YES NO                                                                                                                                                                            
+         1        108 YES NO                                                                                                                                                                            
+         1        109 YES NO                                                                                                                                                                            
+         1        110 YES NO                                                                                                                                                                            
+         1        111 YES NO                                                                                                                                                                            
+         1        112 YES NO                                                                                                                                                                            
+         1        113 YES NO                                                                                                                                                                            
+         1        114 YES NO                                                                                                                                                                            
+         1        115 YES NO                                                                                                                                                                            
+         1        116 YES NO                                                                                                                                                                            
+         1        117 YES NO                                                                                                                                                                            
+         1        118 YES NO                                                                                                                                                                            
+         1        119 YES NO                                                                                                                                                                            
+         1        120 YES NO                                                                                                                                                                            
+         1        121 YES NO                                                                                                                                                                            
+         1        122 YES NO                                                                                                                                                                            
+         1        123 YES NO                                                                                                                                                                            
+         1        124 YES NO                                                                                                                                                                            
+         1        125 YES NO                                                                                                                                                                            
+         1        126 YES NO                                                                                                                                                                            
+         1        127 YES NO                                                                                                                                                                            
+         1        128 YES NO                                                                                                                                                                            
+         1        129 YES NO                                                                                                                                                                            
+         1        130 YES NO                                                                                                                                                                            
+         1        131 YES NO                                                                                                                                                                            
+
+   THREAD#  SEQUENCE# ARC APPLIED                                                                                                                                                                       
+---------- ---------- --- ---------                                                                                                                                                                     
+         1        132 YES NO                                                                                                                                                                            
+         1        133 YES NO                                                                                                                                                                            
+         1        134 YES NO                                                                                                                                                                            
+
+100 rows selected.
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Dataguard Information
+SQL> ----********************************************************
+SQL> 
+SQL> show parameter remote_login
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+remote_login_passwordfile            string      EXCLUSIVE                                                                                                                                              
+SQL> select force_logging from v$database;
+
+FOR                                                                                                                                                                                                     
+---                                                                                                                                                                                                     
+NO                                                                                                                                                                                                      
+
+SQL> show parameter db_name;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_name                              string      svcg                                                                                                                                                   
+SQL> show parameter memory_target;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+memory_target                        big integer 796M                                                                                                                                                   
+SQL> show parameter memory_max_target;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+memory_max_target                    big integer 796M                                                                                                                                                   
+SQL> show parameter db_unique_name;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_unique_name                       string      svcg                                                                                                                                                   
+SQL> show parameter archive_lag_target;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+archive_lag_target                   integer     0                                                                                                                                                      
+SQL> show parameter compatible;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+compatible                           string      11.2.0.4.0                                                                                                                                             
+SQL> show parameter control_files;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+control_files                        string      +ORADATA/svcg/controlfile/curr                                                                                                                         
+                                                 ent.266.918325513                                                                                                                                      
+SQL> show parameter db_create_file_dest;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_create_file_dest                  string      +ORADATA                                                                                                                                               
+SQL> show parameter DB_CREATE_ONLINE_LOG_DEST;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_create_online_log_dest_1          string                                                                                                                                                             
+db_create_online_log_dest_2          string                                                                                                                                                             
+db_create_online_log_dest_3          string                                                                                                                                                             
+db_create_online_log_dest_4          string                                                                                                                                                             
+db_create_online_log_dest_5          string                                                                                                                                                             
+SQL> show parameter db_recovery_file_dest;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_recovery_file_dest                string                                                                                                                                                             
+db_recovery_file_dest_size           big integer 0                                                                                                                                                      
+SQL> show parameter log_archive_config;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_config                   string                                                                                                                                                             
+SQL> show parameter log_archive_max_processes;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_max_processes            integer     4                                                                                                                                                      
+SQL> show parameter log_archive_dest_1;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_dest_1                   string      LOCATION=+ORAFRA/archive                                                                                                                               
+log_archive_dest_10                  string                                                                                                                                                             
+log_archive_dest_11                  string                                                                                                                                                             
+log_archive_dest_12                  string                                                                                                                                                             
+log_archive_dest_13                  string                                                                                                                                                             
+log_archive_dest_14                  string                                                                                                                                                             
+log_archive_dest_15                  string                                                                                                                                                             
+log_archive_dest_16                  string                                                                                                                                                             
+log_archive_dest_17                  string                                                                                                                                                             
+log_archive_dest_18                  string                                                                                                                                                             
+log_archive_dest_19                  string                                                                                                                                                             
+SQL> show parameter log_archive_dest_state_1;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_dest_state_1             string      enable                                                                                                                                                 
+log_archive_dest_state_10            string      enable                                                                                                                                                 
+log_archive_dest_state_11            string      enable                                                                                                                                                 
+log_archive_dest_state_12            string      enable                                                                                                                                                 
+log_archive_dest_state_13            string      enable                                                                                                                                                 
+log_archive_dest_state_14            string      enable                                                                                                                                                 
+log_archive_dest_state_15            string      enable                                                                                                                                                 
+log_archive_dest_state_16            string      enable                                                                                                                                                 
+log_archive_dest_state_17            string      enable                                                                                                                                                 
+log_archive_dest_state_18            string      enable                                                                                                                                                 
+log_archive_dest_state_19            string      enable                                                                                                                                                 
+SQL> show parameter log_archive_dest_2;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_dest_2                   string                                                                                                                                                             
+log_archive_dest_20                  string                                                                                                                                                             
+log_archive_dest_21                  string                                                                                                                                                             
+log_archive_dest_22                  string                                                                                                                                                             
+log_archive_dest_23                  string                                                                                                                                                             
+log_archive_dest_24                  string                                                                                                                                                             
+log_archive_dest_25                  string                                                                                                                                                             
+log_archive_dest_26                  string                                                                                                                                                             
+log_archive_dest_27                  string                                                                                                                                                             
+log_archive_dest_28                  string                                                                                                                                                             
+log_archive_dest_29                  string                                                                                                                                                             
+SQL> show parameter log_archive_dest_state_2;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_archive_dest_state_2             string      enable                                                                                                                                                 
+log_archive_dest_state_20            string      enable                                                                                                                                                 
+log_archive_dest_state_21            string      enable                                                                                                                                                 
+log_archive_dest_state_22            string      enable                                                                                                                                                 
+log_archive_dest_state_23            string      enable                                                                                                                                                 
+log_archive_dest_state_24            string      enable                                                                                                                                                 
+log_archive_dest_state_25            string      enable                                                                                                                                                 
+log_archive_dest_state_26            string      enable                                                                                                                                                 
+log_archive_dest_state_27            string      enable                                                                                                                                                 
+log_archive_dest_state_28            string      enable                                                                                                                                                 
+log_archive_dest_state_29            string      enable                                                                                                                                                 
+SQL> show parameter fal_server;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+fal_server                           string                                                                                                                                                             
+SQL> show parameter fal_client;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+fal_client                           string                                                                                                                                                             
+SQL> show parameter standby_file_management;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+standby_file_management              string      MANUAL                                                                                                                                                 
+SQL> show parameter db_file_name_convert;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+db_file_name_convert                 string                                                                                                                                                             
+SQL> show parameter log_file_name_convert;
+
+NAME                                 TYPE        VALUE                                                                                                                                                  
+------------------------------------ ----------- ------------------------------                                                                                                                         
+log_file_name_convert                string                                                                                                                                                             
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Check for the redo transport
+SQL> ----********************************************************
+SQL> 
+SQL> select status , error from v$archive_dest where dest_id=2;
+
+STATUS    ERROR                                                                                                                                                                                         
+--------- -----------------------------------------------------------------                                                                                                                             
+INACTIVE                                                                                                                                                                                                
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Data guard archive log status
+SQL> ----********************************************************
+SQL> 
+SQL> COL DB_NAME FORMAT A8
+SQL> COL HOSTNAME FORMAT A12
+SQL> COL LOG_ARCHIVED FORMAT 999999
+SQL> COL LOG_APPLIED FORMAT 999999
+SQL> COL LOG_GAP FORMAT 9999
+SQL> COL APPLIED_TIME FORMAT A12
+SQL> 
+SQL> SELECT DB_NAME, HOSTNAME, LOG_ARCHIVED_TH1,LOG_ARCHIVED_TH2,LOG_APPLIED_TH1,LOG_APPLIED_TH2,LOG_ARCHIVED_TH1-LOG_APPLIED_TH1 LOG_GAP_TH1,LOG_ARCHIVED_TH2-LOG_APPLIED_TH2 LOG_GAP_TH2
+  2  FROM
+  3  (
+  4  SELECT NAME DB_NAME
+  5  FROM V$DATABASE
+  6  ),
+  7  (
+  8  SELECT UPPER(SUBSTR(HOST_NAME,1,(DECODE(INSTR(HOST_NAME,'.'),0,LENGTH(HOST_NAME),
+  9  (INSTR(HOST_NAME,'.')-1))))) HOSTNAME
+ 10  FROM V$INSTANCE
+ 11  ),
+ 12  (
+ 13  SELECT MAX(SEQUENCE#) LOG_ARCHIVED_TH1
+ 14  FROM V$ARCHIVED_LOG WHERE DEST_ID=1 AND ARCHIVED='YES' and Thread#=1
+ 15  and
+ 16  resetlogs_id in
+ 17  ( select max(resetlogs_id) from v$archived_log where Thread#=1)
+ 18  ),
+ 19  (
+ 20  SELECT MAX(SEQUENCE#) LOG_ARCHIVED_TH2
+ 21  FROM V$ARCHIVED_LOG WHERE DEST_ID=1 AND ARCHIVED='YES' and Thread#=2
+ 22  and
+ 23  resetlogs_id in
+ 24  ( select max(resetlogs_id) from v$archived_log where Thread#=2)
+ 25  ),
+ 26  (
+ 27  SELECT MAX(SEQUENCE#) LOG_APPLIED_TH1
+ 28  FROM V$ARCHIVED_LOG WHERE DEST_ID=2 AND APPLIED='YES' and Thread#=1
+ 29  and
+ 30  resetlogs_id in
+ 31  ( select max(resetlogs_id) from v$archived_log where Thread#=1)
+ 32  ),
+ 33  (
+ 34  SELECT MAX(SEQUENCE#) LOG_APPLIED_TH2
+ 35  FROM V$ARCHIVED_LOG WHERE DEST_ID=2 AND APPLIED='YES' and Thread#=2
+ 36  and
+ 37  resetlogs_id in
+ 38  ( select max(resetlogs_id) from v$archived_log where Thread#=2)
+ 39  );
+
+DB_NAME  HOSTNAME     LOG_ARCHIVED_TH1 LOG_ARCHIVED_TH2 LOG_APPLIED_TH1 LOG_APPLIED_TH2 LOG_GAP_TH1 LOG_GAP_TH2                                                                                         
+-------- ------------ ---------------- ---------------- --------------- --------------- ----------- -----------                                                                                         
+SVCG     NODE1                     134               74                                                                                                                                                 
+
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Rman Backup of Information
+SQL> ----********************************************************
+SQL> 
+SQL> set linesize 222
+SQL> col "Start Time" format a18
+SQL> col "End Time" format a18
+SQL> col "BK Input Size: MB" format 999,999,999.99
+SQL> col "BK Output Size: MB" format 999,999,999.99
+SQL> col "Backup To" format a12
+SQL> col "Status" format a35
+SQL> col "Backup Type" format a20
+SQL> col "Total Time" format a10
+SQL> 
+SQL> select to_char(START_TIME,'DD/MM/YYYY HH24:MI') "Start Time", to_char(END_TIME,'DD/MM/YYYY HH24:MI') "End Time",
+  2  round(INPUT_BYTES/1024/1024,2) "BK Input Size: MB",round(OUTPUT_BYTES/1024/1024,2) "BK Output Size: MB",
+  3  OUTPUT_DEVICE_TYPE "Backup To",STATUS "Status",INPUT_TYPE "Backup Type",TIME_TAKEN_DISPLAY "Total Time"
+  4  from V$RMAN_BACKUP_JOB_DETAILS
+  5  where sysdate - START_TIME < 30 order by 1 desc;
+
+no rows selected
+
+SQL> 
+SQL> 
+SQL> ---- ***************************************************
+SQL> ---- log switch information
+SQL> ----********************************************************
+SQL> 
+SQL> set pages 999;
+SQL> select to_char(first_time,'DD-MON-RR') "Date",
+  2  to_char(sum(decode(to_char(first_time,'HH24'),'00',2,0)),'99') " 00",
+  3  to_char(sum(decode(to_char(first_time,'HH24'),'01',2,0)),'99') " 01",
+  4  to_char(sum(decode(to_char(first_time,'HH24'),'02',2,0)),'99') " 02",
+  5  to_char(sum(decode(to_char(first_time,'HH24'),'03',2,0)),'99') " 03",
+  6  to_char(sum(decode(to_char(first_time,'HH24'),'04',2,0)),'99') " 04",
+  7  to_char(sum(decode(to_char(first_time,'HH24'),'05',2,0)),'99') " 05",
+  8  to_char(sum(decode(to_char(first_time,'HH24'),'06',2,0)),'99') " 06",
+  9  to_char(sum(decode(to_char(first_time,'HH24'),'07',2,0)),'99') " 07",
+ 10  to_char(sum(decode(to_char(first_time,'HH24'),'08',2,0)),'99') " 08",
+ 11  to_char(sum(decode(to_char(first_time,'HH24'),'09',2,0)),'99') " 09",
+ 12  to_char(sum(decode(to_char(first_time,'HH24'),'10',2,0)),'99') " 10",
+ 13  to_char(sum(decode(to_char(first_time,'HH24'),'11',2,0)),'99') " 11",
+ 14  to_char(sum(decode(to_char(first_time,'HH24'),'12',2,0)),'99') " 12",
+ 15  to_char(sum(decode(to_char(first_time,'HH24'),'13',2,0)),'99') " 13",
+ 16  to_char(sum(decode(to_char(first_time,'HH24'),'14',2,0)),'99') " 14",
+ 17  to_char(sum(decode(to_char(first_time,'HH24'),'15',2,0)),'99') " 15",
+ 18  to_char(sum(decode(to_char(first_time,'HH24'),'16',2,0)),'99') " 16",
+ 19  to_char(sum(decode(to_char(first_time,'HH24'),'17',2,0)),'99') " 17",
+ 20  to_char(sum(decode(to_char(first_time,'HH24'),'18',2,0)),'99') " 18",
+ 21  to_char(sum(decode(to_char(first_time,'HH24'),'19',2,0)),'99') " 19",
+ 22  to_char(sum(decode(to_char(first_time,'HH24'),'20',2,0)),'99') " 20",
+ 23  to_char(sum(decode(to_char(first_time,'HH24'),'21',2,0)),'99') " 21",
+ 24  to_char(sum(decode(to_char(first_time,'HH24'),'22',2,0)),'99') " 22",
+ 25  to_char(sum(decode(to_char(first_time,'HH24'),'23',2,0)),'99') " 23"
+ 26  from v$log_history
+ 27  where first_time-sysdate <30
+ 28  group by to_char(first_time,'DD-MON-RR')
+ 29  order by 1;
+
+Date       00  01  02  03  04  05  06  07  08  09  10  11  12  13  14  15  16  17  18  19  20  21  22  23                                                                                                                     
+--------- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---                                                                                                                     
+01-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   0   2                                                                                                                     
+02-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   4   0   0   0   0   0   0   2                                                                                                                     
+03-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0  12   0   0   0   0   0                                                                                                                     
+04-AUG-16   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   2   0                                                                                                                     
+05-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0                                                                                                                     
+05-OCT-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   6  20   0   0   0   0   0   0                                                                                                                     
+06-AUG-16   0   0   2   0   0   0   2   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0                                                                                                                     
+07-AUG-16   0   0   0   0   0   0   4   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0                                                                                                                     
+07-OCT-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   6   0   0   0   0   0   0   0   0                                                                                                                     
+08-AUG-16   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   2   0                                                                                                                     
+09-AUG-16   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0                                                                                                                     
+10-AUG-16   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0                                                                                                                     
+11-AUG-16   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   2   0   0   0   0   2   2   2                                                                                                                     
+11-MAY-17   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   8   0   0   0   0   0   0   2   0                                                                                                                     
+12-AUG-16   0   2   2   0   2   4   0   0   0   0   0   0   0   0   0   0  10   4   0   0   0   0   0   0                                                                                                                     
+12-MAY-17   0   0   0   0   2   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   2   0                                                                                                                     
+12-SEP-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0  10  16   0   2   0   0   0                                                                                                                     
+13-MAY-17   0   0   0   0   0   0   2   0   0   0   2   0   0   0   0   0   2   0   0   0   2   0   0   0                                                                                                                     
+13-SEP-16   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0  14   0   0   0   0   0   0   2   0                                                                                                                     
+14-MAY-17   0   0   0   0   2   0   0   0   0   0   4   0   0   0   0   0   0   0   2   0   0   0   2   0                                                                                                                     
+14-SEP-16   0   0   0   0   0   0  36   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   2   0                                                                                                                     
+15-MAY-17   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   2   0   2   0                                                                                                                     
+15-SEP-16   0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   4   0   0   0   4   0                                                                                                                     
+16-MAY-17   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   2   0   0   0   2   0                                                                                                                     
+16-SEP-16   0   0   0   0   0   0   0   0   4   0   0   0   0   0   0   0   0   0   0   0   0   2   2   0                                                                                                                     
+17-MAY-17   0   0   0   0   0   0   0   0   0   0   0   0   0   0   2   2   0   0   0   0   0   0   2   0                                                                                                                     
+17-SEP-16   2   0   0   0   0   0   2   0   0   4   0   0   0   0   4   0   0   0   0   0   0   0   2   0                                                                                                                     
+18-OCT-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   8  12   2   0   0   0   0                                                                                                                     
+18-SEP-16   0   0   0   0   6   0   0   0   0   0   2   0   0   0   0   0   0   0   6   0   0   2   0   0                                                                                                                     
+19-OCT-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   6   2   0   0   0   0                                                                                                                     
+19-SEP-16   0   0   0   0   0   0   0   0   4   0   0   2   0   0   0   0   0   0   0   0   0   0   2   0                                                                                                                     
+25-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   6   0   0   0   0   0   4                                                                                                                     
+26-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   6   0                                                                                                                     
+27-JUL-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   8   0   0   0   2   0                                                                                                                     
+28-JUL-16   0   0   0   0   0   2   0   0   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0                                                                                                                     
+29-JUL-16   0   0   0   0   0   0   0   0   0   0   0   2   0   0   0   0   8   0   0   0   0   0   0   0                                                                                                                     
+30-AUG-16   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0  22   0   0   0   0   0   0   0                                                                                                                     
+30-JUL-16   0   0   0   0   0   0   2   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   2   0                                                                                                                     
+31-JUL-16   0   0   0   0   0   0   0   0   0   2   0   0   0   0   0   0   0   0   2   0   0   0   0   0                                                                                                                     
+
+39 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- ASM Disk Information
+SQL> ----********************************************************
+SQL> 
+SQL> set linesize 500
+SQL> column name format a30
+SQL> column COMPATIBILITY format a20
+SQL> column DATABASE_COMPATIBILITY format a20
+SQL> column FREE_MB format a20
+SQL> column type format a20
+SQL> 
+SQL> select GROUP_NUMBER GROUP_NO ,NAME,STATE, TYPE,(TOTAL_MB/(1024)) total_GB  , (FREE_MB/1024) free_GB  from  v$asm_diskgroup order by group_number, name;
+
+  GROUP_NO NAME                           STATE       TYPE                   TOTAL_GB    FREE_GB                                                                                                                                                                                                                                                                                                                                                                                                                    
+---------- ------------------------------ ----------- -------------------- ---------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                    
+         0 VOTE_DISK                      DISMOUNTED                                0          0                                                                                                                                                                                                                                                                                                                                                                                                                    
+         1 CRS_VOTE                       MOUNTED     EXTERN               1.99804688  1.6015625                                                                                                                                                                                                                                                                                                                                                                                                                    
+         2 ORAARCH                        MOUNTED     EXTERN               .999023438 .081054688                                                                                                                                                                                                                                                                                                                                                                                                                    
+         3 ORADATA                        CONNECTED   EXTERN               5.99414063 2.90722656                                                                                                                                                                                                                                                                                                                                                                                                                    
+         4 ORAFRA                         MOUNTED     EXTERN               1.99804688 .834960938                                                                                                                                                                                                                                                                                                                                                                                                                    
+
+SQL> select GROUP_NUMBER GROUP_NO ,NAME,REQUIRED_MIRROR_FREE_MB ,USABLE_FILE_MB,OFFLINE_DISKS,COMPATIBILITY ,DATABASE_COMPATIBILITY  from v$asm_diskgroup order by group_number, name;
+
+  GROUP_NO NAME                           REQUIRED_MIRROR_FREE_MB USABLE_FILE_MB OFFLINE_DISKS COMPATIBILITY        DATABASE_COMPATIBILI                                                                                                                                                                                                                                                                                                                                                                            
+---------- ------------------------------ ----------------------- -------------- ------------- -------------------- --------------------                                                                                                                                                                                                                                                                                                                                                                            
+         0 VOTE_DISK                                            0              0             0 0.0.0.0.0            0.0.0.0.0                                                                                                                                                                                                                                                                                                                                                                                       
+         1 CRS_VOTE                                             0           1640             0 11.2.0.0.0           10.1.0.0.0                                                                                                                                                                                                                                                                                                                                                                                      
+         2 ORAARCH                                              0             83             0 11.2.0.0.0           10.1.0.0.0                                                                                                                                                                                                                                                                                                                                                                                      
+         3 ORADATA                                              0           2977             0 11.2.0.0.0           10.1.0.0.0                                                                                                                                                                                                                                                                                                                                                                                      
+         4 ORAFRA                                               0            855             0 11.2.0.0.0           10.1.0.0.0                                                                                                                                                                                                                                                                                                                                                                                      
+
+SQL> 
+SQL> 
+SQL> 
+SQL> ----********************************************************
+SQL> ---- Begin spooling for Memory Advisor
+SQL> ----********************************************************
+SQL> 
+SQL> select name, open_mode, database_role from v$database;
+
+NAME                           OPEN_MODE            DATABASE_ROLE                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+------------------------------ -------------------- ----------------                                                                                                                                                                                                                                                                                                                                                                                                                                                
+SVCG                           READ WRITE           PRIMARY                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+SQL> 
+SQL> show parameter memory;
+
+NAME                                 TYPE                 VALUE                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------------------------------------ -------------------- ------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                            
+hi_shared_memory_address             integer              0                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+memory_max_target                    big integer          796M                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+memory_target                        big integer          796M                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+shared_memory_address                integer              0                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+SQL> 
+SQL> show parameter sga;
+
+NAME                                 TYPE                 VALUE                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------------------------------------ -------------------- ------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                            
+lock_sga                             boolean              FALSE                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+pre_page_sga                         boolean              FALSE                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+sga_max_size                         big integer          796M                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+sga_target                           big integer          0                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+SQL> 
+SQL> show parameter pga;
+
+NAME                                 TYPE                 VALUE                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+------------------------------------ -------------------- ------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                            
+pga_aggregate_target                 big integer          0                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+SQL> 
+SQL> select * from v$memory_target_advice;
+
+MEMORY_SIZE MEMORY_SIZE_FACTOR ESTD_DB_TIME ESTD_DB_TIME_FACTOR    VERSION                                                                                                                                                                                                                                                                                                                                                                                                                                          
+----------- ------------------ ------------ ------------------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        597                .75         4869              1.0257          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        796                  1         4747                   1          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        995               1.25         4747                   1          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+       1194                1.5         4747                   1          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+       1393               1.75         4747                   1          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+       1592                  2         4747                   1          0                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
+6 rows selected.
+
+SQL> 
+SQL> select * from v$sga_target_advice;
+
+  SGA_SIZE SGA_SIZE_FACTOR ESTD_DB_TIME ESTD_DB_TIME_FACTOR ESTD_PHYSICAL_READS                                                                                                                                                                                                                                                                                                                                                                                                                                     
+---------- --------------- ------------ ------------------- -------------------                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       390             .75         5623              1.1845              499119                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       520               1         4747                   1              329974                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       650            1.25         4039               .8508              203297                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       780             1.5         3894               .8204              203297                                                                                                                                                                                                                                                                                                                                                                                                                                     
+       910            1.75         3807               .8019              203297                                                                                                                                                                                                                                                                                                                                                                                                                                     
+      1040               2         3786               .7976              203297                                                                                                                                                                                                                                                                                                                                                                                                                                     
+
+6 rows selected.
+
+SQL> 
+SQL> select pga_target_for_estimate, pga_target_factor, ESTD_PGA_CACHE_HIT_PERCENTAGE from v$pga_target_advice;
+
+PGA_TARGET_FOR_ESTIMATE PGA_TARGET_FACTOR ESTD_PGA_CACHE_HIT_PERCENTAGE                                                                                                                                                                                                                                                                                                                                                                                                                                             
+----------------------- ----------------- -----------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                             
+               36175872              .125                            97                                                                                                                                                                                                                                                                                                                                                                                                                                             
+               72351744               .25                            97                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              144703488                .5                            97                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              217055232               .75                            97                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              289406976                 1                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              347287552               1.2                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              405169152               1.4                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              463050752               1.6                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              520932352               1.8                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              578813952                 2                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+              868220928                 3                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+             1157627904                 4                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+             1736441856                 6                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+             2315255808                 8                           100                                                                                                                                                                                                                                                                                                                                                                                                                                             
+
+14 rows selected.
+
+SQL> 
+SQL> -- ************************************************
+SQL> -- Display pga target advice
+SQL> -- ************************************************
+SQL> 
+SQL> SELECT
+  2     ROUND(pga_target_for_estimate /(1024*1024)) c1,
+  3     estd_pga_cache_hit_percentage         c2,
+  4     estd_overalloc_count                  c3
+  5  FROM
+  6     v$pga_target_advice;
+
+        C1         C2         C3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+---------- ---------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        35         97        120                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        69         97        120                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       138         97        120                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       207         97        117                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       276        100         13                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       331        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       386        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       442        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       497        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       552        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+       828        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+      1104        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+      1656        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+      2208        100          0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+
+14 rows selected.
+
+SQL> 
+SQL> -- ************************************************
+SQL> -- Display pga target advice histogram
+SQL> -- ************************************************
+SQL> 
+SQL> SELECT
+  2     low_optimal_size/1024 "Low(K)",
+  3     (high_optimal_size+1)/1024 "High(K)",
+  4     estd_optimal_executions "Optimal",
+  5     estd_onepass_executions "One Pass",
+  6     estd_multipasses_executions "Multi-Pass"
+  7  FROM
+  8     v$pga_target_advice_histogram
+  9  WHERE
+ 10     pga_target_factor = 2
+ 11  AND
+ 12     estd_total_executions != 0
+ 13  ORDER BY
+ 14     1;
+
+    Low(K)    High(K)    Optimal   One Pass Multi-Pass                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+---------- ---------- ---------- ---------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+         2          4     231032          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+        64        128       2506          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+       128        256        420          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+       256        512        750          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+       512       1024       6185          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+      1024       2048      22237          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+      2048       4096        186          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+      4096       8192        352          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+      8192      16384         10          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+     16384      32768          6          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+     32768      65536          2          0          0                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+
+11 rows selected.
+
+SQL> 
+SQL> spool off;

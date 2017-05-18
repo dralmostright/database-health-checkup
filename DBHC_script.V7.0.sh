@@ -13,24 +13,10 @@ OS_TYPE_STATUS=""
 DBNAME=""
 DBMODE=""
 DBROLE=""
-
-##
-## Function to check if the shell is bash or not:
-##
-## '##' trims the string from start
-## '*' mactches every thing until it encounters symbol '\'
-##
-function CheckShell(){
-shell=`echo {SHELL##*\}'
-if [ $(shell) = "bash" ];
-	then
-	echo "";
-else 
-	_errorReport "Invalid shell environment: ${bold}${underline}${shell}${reset}."
-fi
-exit 1;
-}
-
+DATE_TIME=`date +%d_%m_%Y`
+RAC_LOG_FILE=""
+LOG_DEST_DIR=`echo $HOME`"/DBHC"
+OS_LOG_FILE=""
 _banner(){
              if [ -z "$1" -a "$1" == " " ]
                 then
@@ -42,6 +28,7 @@ _banner(){
                        echo "########################################################"
         fi
 }
+
 _printNewline(){
         echo -e "\n"
 }
@@ -63,6 +50,29 @@ _errorReport(){
        echo "########################################################"
        exit 1
 }
+
+
+##
+## Function to dispaly Informative message.
+##
+
+infoReport(){
+       echo "########################################################"
+       echo "INFO : $1"
+       echo "INFO : $2" 
+       echo "########################################################"
+}
+
+##
+## Function to dispaly Key Value
+##
+
+keyValueReport(){
+       echo "----------"
+       echo -e "INFO : $1 :: $2"
+       echo "----------"
+}
+
 
 
 ##
@@ -126,6 +136,14 @@ checkValidOS(){
 				fi
 		        ;;
 		esac
+}
+
+##
+## Get the cluster name and generate cluster logfilename
+##
+setClusterLogfile(){
+RAC_LOG_FILE=`$1/bin/cemutlo -n`
+RAC_LOG_FILE=`echo $RAC_LOG_FILE`_racinfo_$DATE_TIME.log
 }
 
 ##
@@ -820,8 +838,6 @@ __EOF__
 #}
 
 
-CheckShell
-
 ##destdir="/home/oracle/DBHC"
 ## 
 ## Set the directory to store the logs to be collected .
@@ -858,14 +874,10 @@ echo "##########################################################################
 
 echo "--------> Deaflut Directory Used for saving logs and metrics: ${bold}${underline}$destdir${reset}"
 
-#_choiceList(){
-#                if [$1 | $2 -eq 0 ]
-#}
-
 ##
 ## List the running databases in Server 
 ## Enter the database to run the health check up :
-
+##
 myarr=($(ps -ef |grep smon | awk -F'_' '{print $3}'))
 echo "--------> List of Oracle Database Instance running on box: ${bold}${underline}`hostname`${reset}"
 
@@ -876,15 +888,18 @@ for i in "${myarr[@]}"
 printf  'Enter the database instance for which Health Check should be Performed : '
 read -r instance
 
-# Get the environment variables for the respective instance
-# Get the ORACLE sid
+##
+## Get the environment variables for the respective instance
+## Get the ORACLE sid
 export ORACLE_SID=`echo $instance`
+
 
 ##
 ## Get the date and time for name of the folders
 ##
 export DATE_TIME=`date +%d_%m_%Y`
 export FILE_NAME=$destdir"/DBarchitecture_"$instance"_DBHC_"$DATE_TIME".log"
+
 
 ## 
 ## Handling the exceptions
@@ -911,6 +926,10 @@ then
  _errorReport "ORACLE_SID Environmental variable not Set. Aborting...."
 fi
 
+
+##
+## Check if the user provided instance name is valid or not
+##
 checkSidValid myarr[@] $instance
 
 if [ $? -eq 0 ]
@@ -919,6 +938,7 @@ then
 else
    dummy=0
 fi
+
 
 ##
 ## Get the type of instance and retrun the database type
@@ -930,6 +950,7 @@ getDBrole $ORACLE_HOME
 echo "-----------> Selected Database/Instance: "${bold}${underline}$DBNAME${reset}" / "${bold}${underline}$instance${reset}
 echo "-----------> Selected Database Open Mode: "${bold}${underline}$DBMODE${reset}
 echo "-----------> Selected Database Role: "${bold}${underline}$DBROLE${reset}
+
 
 ##
 ## Collect the database stats based on its status
@@ -1134,163 +1155,151 @@ printf  ' ----------> Do you Prefer to collect O/S info [Y | N] : '
 read -r oschoice
 
 #echo $oschoice
-oslogfile=osinfo_${DATE_TIME}.log
+OS_LOG_FILE=osinfo_${DATE_TIME}.log
 
 if [ "$oschoice" == "Y" ]
   then
-	#_banner "COLLECTING Logs and redirect out put ot osinfo"
-
-	_banner "COLLECTING Logs and redirect out put ot osinfo" >> $destdir/${oslogfile}
-	date > $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo ===== Gathering the host file info =======>>$destdir/${oslogfile}
-	cat /etc/hosts >> $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo ===== Gathering the user info ============>> $destdir/${oslogfile}
-	cat /etc/passwd >> $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo ==== Gathering the user info =============>> $destdir/${oslogfile}
-	cat /etc/group >> $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo "=========== Virtual memory statistics =========" >> $destdir/${oslogfile}
-	vmstat >> $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo "=========== Input/output statistics ===========" >> $destdir/${oslogfile}
-	iostat >> $destdir/${oslogfile}
-
-	_printNewline >> $destdir/${oslogfile} ## for new line.
-
-	echo "=========== Track System files modification date ===========" >> $destdir/${oslogfile}
-	ls -ltr /etc/hosts /etc/passwd /etc/group /etc/hosts /etc/resolv.conf >> $destdir/${oslogfile}
-
-	#_printNewline  ## for new line.
-	#_banner "COLLECTING INFORMATION SPECIFIC TO O/S"
-	_banner "COLLECTING INFORMATION SPECIFIC TO O/S" >> $destdir/${oslogfile}
-	echo "Copy the O/S info files:" >> $destdir/${oslogfile}
-	#echo "Copy the O/S info files:"
-	#cp  ~/.profile $HOME/DBHC/
-	#cp -r $ORACLE_HOME/network/admin $HOME/DBHC/
-	#cp -r $ORACLE_HOME/dbs $HOME/DBHC/
-	cp -r /etc/hosts $destdir/
-	cp -r /etc/passwd $destdir
-	cp -r /etc/group $destdir
+	  infoReport "Collecting and Spooling logs and metrics" "For Operating System" > $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+	  ## Get the current date and time
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Current Date and time of Server" "`date`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+	  ## Gathering the host file info
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Gathering the host file info" "\n`cat /etc/hosts`" >> $LOG_DEST_DIR/$OS_LOG_FILE
 	
-	#_printNewline  ## for new line.
-	#_banner "COLLECTING INFORMATION SPECIFIC TO PLATFORM"
-	_banner "COLLECTING INFORMATION SPECIFIC TO PLATFORM" >> $destdir/${oslogfile}
-	#echo "########################################################"
-	#echo "########################################################"
-	echo "  ---------> ${bold}${underline}AIX${reset}: For AIX"
-	echo "  ---------> ${bold}${underline}HP${reset}: For HP-UX"
-	echo "  ---------> ${bold}${underline}LX${reset}: For Linux"
-	echo "  ---------> ${bold}${underline}SL${reset}: For Solaris"
-	#echo "########################################################"
-	#echo -e "\n"
-	printf " ----------> Please Enter the Platform in which you are executing Script from above list : "
-	read -r platform
-	
+	  ## Gathering the user info
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Gathering the user info" "\n`cat /etc/passwd`" >> $LOG_DEST_DIR/$OS_LOG_FILE
 
-        ##
-        ## Check if the O/S choice is Valid if not terminate the execution of script.
-        ##
-	checkValidOS $platform
-	if [ ! ${OS_TYPE_STATUS} = "VALID" ]
-		then
-  		_errorReport "Invalid O/S Selection : ${bell}${bold}${underline}${platform}${reset} . Aborting...."
-		exit;
-	else
-  		echo ""
-	fi
-	
+	  ## Gathering the group info
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Gathering the group info" "\n`cat /etc/group`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+	  ## Gathering the group info
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Gathering the group info" "\n`vmstat`" >> $LOG_DEST_DIR/$OS_LOG_FILE
 
-        ##
-        ## Collect logs specific to the O/S
-        ##
-	case "$platform" in
-    		'AIX')
-        	#####################################################
-        	# Your Platform is IBM-AIX and Collecting Data      #
-        	#####################################################
-                	_banner "Your Platform is IBM-AIX and Collecting Data " >> $destdir/${oslogfile}
-                	echo "==================== File system Info ================" $destdir/${oslogfile}
-                	df -g >> $destdir/${oslogfile}
-                	_printNewline >> $destdir/${oslogfile} ## for new line.
-                	echo "Collect the environment variables set in profle." >> $destdir/${oslogfile}
-                	echo ~/.profile >> $destdir/${oslogfile}
-                	_printNewline >> $destdir/${oslogfile} ## for new line.
-                	echo "==== Swap Info and Memory =====" >> $destdir/${oslogfile}
-                	/usr/sbin/lsattr -E -l sys0 -a realmem  >> $destdir/${oslogfile}
-                	_printNewline >> $destdir/osinfo.log ## for new line.
-                	/usr/sbin/lsps -a >> $destdir/${oslogfile}
-        	;;
-    		'HP')
-       		#####################################################
-        	# Your Platform is HP-UX and Collecting Data        #
-        	#####################################################
-                	_banner "Your Platform is HP-UX and Collecting Data" >> $destdir/${oslogfile}
-                	echo "==================== File system Info ================" $destdir/${oslogfile}
-                	bdf >> $destdir/${oslogfile}
-                	_printNewline "\n" >> $destdir/${oslogfile} ## for new line.
-                	echo "Collect the environment variables set in profle." >> $destdir/${oslogfile}
-                	echo ~/.profile >> $destdir/${oslogfile}
-                	_printNewline >> $destdir/${oslogfile} ## for new line.
-                	echo "==== Swap Info and Memory =====" >> $destdir/${oslogfile}
-                	/usr/contrib/bin/machinfo | grep -i Memory >> $destdir/${oslogfile}
-                	_printNewline >> $destdir/${oslogfile} ## for new line.
-               		/usr/sbin/swapinfo -a >> $destdir/${oslogfile}
-        	;;
-    		'LX')
-        	#####################################################
-        	# Your Platform is linux and Collecting Data        #
-        	#####################################################
-                	_banner "Your Platform is Linux and Collecting Data" >> $destdir/${oslogfile}
-                	echo "==================== File system Info ================" >> $destdir/${oslogfile}
-                	df -h >> $destdir/${oslogfile}
+	  ## Gathering Input/output statistics
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Gathering Input/output statistics" "\n`iostat`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+	  ## Track System files modification date
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "Track System files modification date" "\n`ls -ltr /etc/hosts /etc/passwd /etc/group /etc/hosts /etc/resolv.conf`" >> $LOG_DEST_DIR/$OS_LOG_FILE
 
-               		_printNewline >> $destdir/${oslogfile} ## for new line.
-                	echo "Collect the environment variables set in profle." >> $destdir/${oslogfile}
-                	echo ~/.bash_profile >> $destdir/${oslogfile}
+	  ## COLLECTING INFORMATION SPECIFIC TO PLATFORM
+	  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  keyValueReport "COLLECTING INFORMATION SPECIFIC TO PLATFORM" " " >> $LOG_DEST_DIR/$OS_LOG_FILE
+          echo "  ---------> ${bold}${underline}AIX${reset}: For AIX"
+          echo "  ---------> ${bold}${underline}HP${reset}: For HP-UX"
+          echo "  ---------> ${bold}${underline}LX${reset}: For Linux"
+          echo "  ---------> ${bold}${underline}SL${reset}: For Solaris"
+          printf " ----------> Please Enter the Platform in which \n ----------> You are executing Script from above list : "
+          read -r platform
 
-                	_printNewline >> $destdir/${oslogfile} ## for new line.
+      ##
+      ## Check if the O/S choice is Valid if not terminate the execution of script.
+      ##
+      checkValidOS $platform
+      if [ ! ${OS_TYPE_STATUS} = "VALID" ]
+              then
+              _errorReport "Invalid O/S Selection : ${bell}${bold}${underline}${platform}${reset} . Aborting...."
+              exit;
+      else
+              echo ""
+      fi
 
-                	echo "==== Swap Info and Memory =====" >> $destdir/${oslogfile}
-                	cat /proc/meminfo | grep "Mem" >> $destdir/${oslogfile}
 
-                	_printNewline >> $HOME/DBHC/${oslogfile} ## for new line.
-                	cat /proc/meminfo | grep "Swap" >> $destdir/${oslogfile}
-        	;;
-    		'SL')
-        	#####################################################
-        	# Your Platform is Solaris and Collecting Data      #
-       		#####################################################
-        		 _banner "Your Platform is Solaris and Collecting Data"  >> $destdir/${oslogfile}
-			echo "==================== File system Info ================" >> $destdir/${oslogfile}
-			df -h >> $destdir/${oslogfile}
-			_printNewline >> $destdir/${oslogfile} ## for new line.
-			echo "Collect the environment variables set in profle." >> $destdir/${oslogfile}
-			echo ~/.profile >> $destdir/${oslogfile}
-			_printNewline >> $destdir/${oslogfile} ## for new line.
-			echo "==== Swap Info and Memory =====" >> $destdir/${oslogfile}
-			/usr/sbin/prtconf | grep "Memory size" >> $destdir/${oslogfile}
-			_printNewline >> $destdir/${oslogfile} ## for new line.
-			/usr/sbin/swap -s >>$destdir/${oslogfile}
-		;;
-	esac
-else 
-#echo -e "\n"
+      ##
+      ## Collect logs specific to the O/S
+      ##
+      case "$platform" in
+              'AIX')
+              #####################################################
+              # Your Platform is IBM-AIX and Collecting Data      #
+              #####################################################
+			      ## Notifify Platform
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Your Platform is AIX" "Collecting Data" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+			      ## File system Info and Mountpoint Status
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "File system Info and Mountpoint Status" "\n`df -g`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+				  
+			      ## View default profile contents
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Default Profile" "\n`cat ~/.profile`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+
+			      ## Memory and Swap information
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Memory : `/usr/sbin/lsattr -E -l sys0 -a realmem`" "\n Swap: `/usr/sbin/lsps -a`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+              ;;
+              'HP')
+              #####################################################
+              # Your Platform is HP-UX and Collecting Data        #
+              #####################################################
+			      ## Notifify Platform
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Your Platform is HP-UX" "Collecting Data" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+			      ## File system Info and Mountpoint Status
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "File system Info and Mountpoint Status" "\n`bdf`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+				  
+			      ## View default profile contents
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Default Profile" "\n`cat ~/.profile`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+
+			      ## Memory and Swap information
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Memory : `/usr/contrib/bin/machinfo | grep -i Memory`" "\n Swap: `/usr/sbin/swapinfo -a`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+              ;;
+              'LX')
+              #####################################################
+              # Your Platform is linux and Collecting Data        #
+              #####################################################
+			      ## Notifify Platform
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Your Platform is Linux" "Collecting Data" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+			      ## File system Info and Mountpoint Status
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "File system Info and Mountpoint Status" "\n--------\n`df -h`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+				  
+			      ## View default profile contents
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Default Profile" "\n--------\n`cat ~/.bash_profile`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+
+			      ## Memory and Swap information
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Memory : `cat /proc/meminfo | grep "Mem"`" "\n Swap:\n--------`cat /proc/meminfo | grep "Swap"`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+              ;;
+              'SL')
+              #####################################################
+              # Your Platform is Solaris and Collecting Data      #
+              #####################################################
+			      ## Notifify Platform
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Your Platform is Solaris" "Collecting Data" >> $LOG_DEST_DIR/$OS_LOG_FILE
+	  
+			      ## File system Info and Mountpoint Status
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "File system Info and Mountpoint Status" "\n`df -h`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+				  
+			      ## View default profile contents
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Default Profile" "\n`cat ~/.profile`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+
+			      ## Memory and Swap information
+				  echo -e "\n" >> $LOG_DEST_DIR/$OS_LOG_FILE
+			  	  keyValueReport "Memory : `/usr/sbin/prtconf | grep "Memory size"`" "\n Swap: `/usr/sbin/swap -s`" >> $LOG_DEST_DIR/$OS_LOG_FILE
+              ;;
+      esac
+else
 echo "---------> Collecting logs and metrics For Operating System Skipped"
 fi
-
 sleep 2
 
 
@@ -1299,11 +1308,34 @@ sleep 2
 ##
 clear
 
-##############################################################
-# RAC information                                           ##
-#                                                           ##
-##############################################################
-#echo -e "\n"
+
+
+##
+## Collect RAC Specific Information                                   
+##                                                           
+
+##
+## Get The GRID HOME to run GRID Specific commands.
+## By checking if Oracle Grid Infra is running or not.
+##
+
+RAC_HOME=`ps -ef | grep d.bin | grep orarootagent |tail -1 | awk '{print $NF}'`
+if [[ -z "$RAC_HOME" ]]; then
+    infoReport "No Oraacle Clusterware Detected" "Oracle Clusterware info collection skipped."
+    exit 0;  
+else
+    RAC_HOME=`dirname $RAC_HOME`
+    RAC_HOME=`echo $RAC_HOME|sed 's/bin//'`
+    PATH=$PATH:$RAC_HOME/bin
+fi
+
+
+##
+## Set the log name for Oracle Clusterware logs.
+##
+
+setClusterLogfile $RAC_HOME
+
 
 echo "#############################################################################";
 echo "#############################################################################";
@@ -1327,89 +1359,77 @@ echo "#  |_|  \___/|_|    |_|  \_\/_/    \_\_____|                              
 echo "#############################################################################";
 echo "#############################################################################";
 
-echo -e "\n" >> $destdir/racinfo.log ## for new line.
-echo -e "\n" >> $destdir/racinfo.log ## for new line.
-
 #echo -e "\n"
 echo "----------> Collecting logs and metrics For Oracle Clusterware"
-echo "-----------------[ Collecting logs and metrics For Oracle Clusterware ]-------------------" >> $destdir/racinfo.log
 
-#_banner "ORACLE CLUSTERWARE INFORMATION AND ITS SERVICES STATUS"
-#_banner "ORACLE CLUSTERWARE INFORMATION AND ITS SERVICES STATUS" >> $destdir/racinfo.log
-echo -e "\n" >> $HOME/DBHC/racinfo.log ## for new line.
-#echo " 1: Yes it is RAC-node."
-#echo " 2: No its standalone."
-#echo "########################################################"
-printf " ---------> Do you wish to collect information related to Oracle Clusterware [Y | N] : "
+printf " ---------> Do you wish to collect information \n ---------> related to Oracle Clusterware [Y | N] : "
 read -r racinfo
 if [ "$racinfo" == "Y" ]
 then
-#echo -e "\n"
-printf "  --------> Is this node Rac [Y | N] : "
-read -r mtype
-case "$mtype" in
-    'Y')
-        # Set the proper environment variables run the commands from grid home
+	infoReport "Collecting and Spooling logs and metrics" "For Oracle crs information" > $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the name of the cluster
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Cluseter name" `cemutlo -n` >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the clusterware active version running on the box
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Clusterware Active Version" "\n`crsctl query crs activeversion`" >> $LOG_DEST_DIR/$RAC_LOG_FILE        
+        
+	##  Get the crs information
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Get the crs information" "\n`crsctl check crs`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the information of overall cluster
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Get the information of overall cluster" "\n`crsctl check cluster -all`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the status of overall services running on the box
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Get the status of overall services running on the box" "\n`crsctl stat res -t`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the OCR information
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "OCR metrics and status" "\n`ocrcheck`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	## Get the Voting Disk information
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Voting Disk metrics and status" "\n`crsctl query css votedisk`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	
+	
+	## Check the Cluster Time Synchronization status
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+	keyValueReport "Cluster Time Synchronization status" "\n`crsctl check ctss`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
 
-        # Get the ASM sid
-        ASM=$(cat /etc/oratab | awk -F':' '{print $1}'| grep +ASM)
-
-        # Get the Grid home
-        ASMHOME=$(cat /etc/oratab | awk -F':' '{print $2}'| grep grid)
-
-        # set the obtained variables in respective variables
-        export ORACLE_SID=$ASM
-        PATH=$PATH:$ASMHOME/bin
-                _banner "Instance type is RAC"
-                _banner "Instance type is RAC" >> $destdir/racinfo.log
-
-                # Get the crs information
-                _banner "Get the crs information" >> $destdir/racinfo.log
-                crsctl check crs >> $destdir/racinfo.log
-
-                _printNewline >> $destdir/osinfo.log ## for new line.
-
-                # Get the information of overall cluster
-                _banner "Get the information of overall cluster" >> $destdir/racinfo.log
-                crsctl check cluster -all >> $destdir/racinfo.log
-
-                _printNewline >> $destdir/osinfo.log ## for new line.
-
-                # Get the information of the services
-                _banner "Get the information of the services" >> $destdir/racinfo.log
-                crsctl stat res -t >> $destdir/racinfo.log
-
-                _printNewline >> $destdir/osinfo.log ## for new line.
-
-                # Get the OCR and Voting Disk information
-                _banner "Get the Ocr information" >> $destdir/racinfo.log
-                ocrcheck >> $destdir/racinfo.log
-
-                _printNewline >> $destdir/osinfo.log ## for new line.
-
-                _banner "Get the Voting Disk information" >> $destdir/racinfo.log
-                crsctl query css votedisk >> $destdir/racinfo.log
-
-                _printNewline >> $destdir/osinfo.log ## for new line.
-
-                SCRIPTHOST=$(hostname| awk -F'.' '{print $1}')
-
-                # Get the list 1000 lines of cluster logfile
-                _banner "Get the list 1000 lies of the cluster logfile" >> $destdir/racinfo.log
-                tail -1000 $ASMHOME/log/$SCRIPTHOST/alert$SCRIPTHOST.log >> $destdir/racinfo.log
-        ;;
-    'N')
-        echo "In progress"
-                echo "Instance type is Standalone" >> $destdir/racinfo.log
-        ;;
-esac
+	##
+	## Get the databases registered with Oracle Clusterware and display its properties
+	##
+	RACDBS=($(srvctl config))
+	
+	for i in "${RACDBS[@]}"
+   	do :
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+   		keyValueReport "Oracle Database Registered with Clusterware" "$i" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+   		keyValueReport "Oracle Database $i status" "\n`srvctl status database -d $i -v`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+		echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+   		keyValueReport "Oracle Database $i configuration" "\n`srvctl config database -d $i`" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+   	done
+	
+	echo -e "\n" >> $LOG_DEST_DIR/$RAC_LOG_FILE
+       
+	 ##
+	 ## Get the list 1000 lines of cluster logfile
+	 ##
+	 infoReport "Get the list 1000 lines of cluster logfile" " " >> $LOG_DEST_DIR/$RAC_LOG_FILE
+         SCRIPTHOST=$(hostname| awk -F'.' '{print $1}')
+         tail -1000 $RAC_HOME/log/$SCRIPTHOST/alert$SCRIPTHOST.log >> $LOG_DEST_DIR/$RAC_LOG_FILE
 
 else
 	echo -e "\n"
-	echo "-----------------[ Collecting logs and metrics For Oracle Clusterware was skipped. ]-------------------"
+	echo "--------------> Collecting logs and metrics For Oracle Clusterware was skipped."
 fi
 
- echo "-----------------[ Log, metrics and statistics collection completed. ]-------------------"
+ 	echo "--------------> Log, metrics and statistics collection completed."
 
 sleep 2
 clear

@@ -1,0 +1,1190 @@
+########################################################
+INFO : Collecting and Spooling logs and metrics
+INFO : For Oracle crs information
+########################################################
+
+
+----------
+INFO : Cluseter name :: prabhu
+----------
+
+
+----------
+INFO : Clusterware Active Version :: 
+Oracle Clusterware active version on the cluster is [11.2.0.4.0]
+----------
+
+
+----------
+INFO : Get the crs information :: 
+CRS-4638: Oracle High Availability Services is online
+CRS-4537: Cluster Ready Services is online
+CRS-4529: Cluster Synchronization Services is online
+CRS-4533: Event Manager is online
+----------
+
+
+----------
+INFO : Get the information of overall cluster :: 
+**************************************************************
+node1:
+CRS-4537: Cluster Ready Services is online
+CRS-4529: Cluster Synchronization Services is online
+CRS-4533: Event Manager is online
+**************************************************************
+node2:
+CRS-4537: Cluster Ready Services is online
+CRS-4529: Cluster Synchronization Services is online
+CRS-4533: Event Manager is online
+**************************************************************
+----------
+
+
+----------
+INFO : Get the status of overall services running on the box :: 
+--------------------------------------------------------------------------------
+NAME           TARGET  STATE        SERVER                   STATE_DETAILS       
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+ora.CRS_VOTE.dg
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.LISTENER.lsnr
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.ORAARCH.dg
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.ORADATA.dg
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.ORAFRA.dg
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.VOTE_DISK.dg
+               OFFLINE OFFLINE      node1                                        
+               OFFLINE OFFLINE      node2                                        
+ora.asm
+               ONLINE  ONLINE       node1                    Started             
+               ONLINE  ONLINE       node2                    Started             
+ora.gsd
+               OFFLINE OFFLINE      node1                                        
+               OFFLINE OFFLINE      node2                                        
+ora.net1.network
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.ons
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+ora.registry.acfs
+               ONLINE  ONLINE       node1                                        
+               ONLINE  ONLINE       node2                                        
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.LISTENER_SCAN1.lsnr
+      1        ONLINE  ONLINE       node1                                        
+ora.LISTENER_SCAN2.lsnr
+      1        ONLINE  ONLINE       node2                                        
+ora.LISTENER_SCAN3.lsnr
+      1        ONLINE  ONLINE       node2                                        
+ora.cvu
+      1        ONLINE  ONLINE       node2                                        
+ora.node1.vip
+      1        ONLINE  ONLINE       node1                                        
+ora.node2.vip
+      1        ONLINE  ONLINE       node2                                        
+ora.oc4j
+      1        ONLINE  ONLINE       node2                                        
+ora.scan1.vip
+      1        ONLINE  ONLINE       node1                                        
+ora.scan2.vip
+      1        ONLINE  ONLINE       node2                                        
+ora.scan3.vip
+      1        ONLINE  ONLINE       node2                                        
+ora.svcg.db
+      1        ONLINE  ONLINE       node2                    Open                
+      2        ONLINE  ONLINE       node1                    Open                
+----------
+
+
+----------
+INFO : OCR metrics and status :: 
+Status of Oracle Cluster Registry is as follows :
+	 Version                  :          3
+	 Total space (kbytes)     :     262120
+	 Used space (kbytes)      :       3596
+	 Available space (kbytes) :     258524
+	 ID                       :  557650260
+	 Device/File Name         :  +CRS_VOTE
+                                    Device/File integrity check succeeded
+
+                                    Device/File not configured
+
+                                    Device/File not configured
+
+                                    Device/File not configured
+
+                                    Device/File not configured
+
+	 Cluster registry integrity check succeeded
+
+	 Logical corruption check bypassed due to non-privileged user
+----------
+
+
+----------
+INFO : Voting Disk metrics and status :: 
+##  STATE    File Universal Id                File Name Disk group
+--  -----    -----------------                --------- ---------
+ 1. ONLINE   15896a9cb43f4f0fbffde7f3aeede4c2 (ORCL:ASMVOTE1) [VOTE_DISK]
+ 2. ONLINE   78c87e07fc7a4fddbf4b7cf396179115 (ORCL:ASMVOTE2) [VOTE_DISK]
+ 3. ONLINE   91e3bab5c2c04f5ebfc86351de87ae5a (ORCL:ASMVOTE3) [VOTE_DISK]
+Located 3 voting disk(s).
+----------
+
+
+----------
+INFO : Cluster Time Synchronization status :: 
+CRS-4701: The Cluster Time Synchronization Service is in Active mode.
+CRS-4702: Offset (in msec): 0
+----------
+
+
+----------
+INFO : Oracle Database Registered with Clusterware :: svcg
+----------
+----------
+INFO : Oracle Database svcg status :: 
+Instance svcg1 is running on node node1. Instance status: Open.
+Instance svcg2 is running on node node2. Instance status: Open.
+----------
+
+
+----------
+INFO : Oracle Database svcg configuration :: 
+Database unique name: svcg
+Database name: svcg
+Oracle home: /u01/app/oracle/product/11.2.0.4/db_2
+Oracle user: oracle
+Spfile: +ORADATA/svcg/spfilesvcg.ora
+Domain: 
+Start options: open
+Stop options: immediate
+Database role: PRIMARY
+Management policy: AUTOMATIC
+Server pools: svcg
+Database instances: svcg1,svcg2
+Disk Groups: ORADATA,ORAFRA
+Mount point paths: 
+Services: 
+Type: RAC
+Database is administrator managed
+----------
+
+
+########################################################
+INFO : Get the list 1000 lines of cluster logfile
+INFO :  
+########################################################
+[ohasd(4213)]CRS-8011:reboot advisory message from host: node2, component: cssagent, with time stamp: L-2016-10-18-17:22:19.920
+[ohasd(4213)]CRS-8013:reboot advisory message text: clsnomon_status: need to reboot, unexpected failure 8 received from CSS
+2016-10-18 17:22:20.295: 
+[cssd(4721)]CRS-1649:An I/O error occured for voting file: ORCL:ASMVOTE2; details at (:CSSNM00060:) in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-18 17:22:20.489: 
+[cssd(4721)]CRS-1652:Starting clean up of CRSD resources.
+2016-10-18 17:22:20.759: 
+[cssd(4721)]CRS-1653:The clean up of the CRSD resources failed.
+2016-10-18 17:22:21.697: 
+[crsd(16259)]CRS-0804:Cluster Ready Service aborted due to Oracle Cluster Registry error [PROC-23: Error in cluster services layer
+]. Details at (:CRSD00111:) in /u01/app/11.2.0.4/grid/log/node1/crsd/crsd.log.
+2016-10-18 17:22:21.802: 
+[ohasd(4213)]CRS-2765:Resource 'ora.crsd' has failed on server 'node1'.
+2016-10-18 17:22:21.938: 
+[ohasd(4213)]CRS-2765:Resource 'ora.evmd' has failed on server 'node1'.
+2016-10-18 17:22:21.948: 
+[ohasd(4213)]CRS-2765:Resource 'ora.ctssd' has failed on server 'node1'.
+2016-10-18 17:22:22.767: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4624)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:22:22.815: 
+[crsd(16298)]CRS-0805:Cluster Ready Service aborted due to failure to communicate with Cluster Synchronization Service with error [3]. Details at (:CRSD00109:) in /u01/app/11.2.0.4/grid/log/node1/crsd/crsd.log.
+2016-10-18 17:22:22.963: 
+[ctssd(16302)]CRS-2402:The Cluster Time Synchronization Service aborted on host node1. Details at (:ctss_css_init1:) in /u01/app/11.2.0.4/grid/log/node1/ctssd/octssd.log.
+2016-10-18 17:22:23.790: 
+[ohasd(4213)]CRS-2765:Resource 'ora.asm' has failed on server 'node1'.
+2016-10-18 17:22:23.795: 
+[ohasd(4213)]CRS-2765:Resource 'ora.crsd' has failed on server 'node1'.
+2016-10-18 17:22:24.972: 
+[ohasd(4213)]CRS-2878:Failed to restart resource 'ora.ctssd'
+2016-10-18 17:22:24.973: 
+[ohasd(4213)]CRS-2769:Unable to failover resource 'ora.ctssd'.
+2016-10-18 17:22:27.175: 
+[ctssd(16375)]CRS-2402:The Cluster Time Synchronization Service aborted on host node1. Details at (:ctss_css_init1:) in /u01/app/11.2.0.4/grid/log/node1/ctssd/octssd.log.
+2016-10-18 17:22:30.181: 
+[ohasd(4213)]CRS-2878:Failed to restart resource 'ora.asm'
+2016-10-18 17:22:30.182: 
+[ohasd(4213)]CRS-2769:Unable to failover resource 'ora.asm'.
+2016-10-18 17:22:30.211: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4624)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:22:31.261: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4624)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:22:32.476: 
+[ctssd(16438)]CRS-2402:The Cluster Time Synchronization Service aborted on host node1. Details at (:ctss_css_init1:) in /u01/app/11.2.0.4/grid/log/node1/ctssd/octssd.log.
+2016-10-18 17:22:35.482: 
+[ohasd(4213)]CRS-2769:Unable to failover resource 'ora.ctssd'.
+2016-10-18 17:22:35.483: 
+[ohasd(4213)]CRS-2878:Failed to restart resource 'ora.crsd'
+2016-10-18 17:22:35.483: 
+[ohasd(4213)]CRS-2769:Unable to failover resource 'ora.crsd'.
+2016-10-18 17:25:41.553: 
+[ohasd(4233)]CRS-2112:The OLR service started on node node1.
+2016-10-18 17:25:43.165: 
+[ohasd(4233)]CRS-1301:Oracle High Availability Service started on node node1.
+2016-10-18 17:25:43.856: 
+[ohasd(4233)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2016-10-18 17:26:04.643: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4563)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:26:10.389: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4566)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-18 17:26:18.809: 
+[ohasd(4233)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-18 17:26:19.253: 
+[gpnpd(4674)]CRS-2328:GPNPD started on node node1. 
+2016-10-18 17:26:22.006: 
+[cssd(4742)]CRS-1713:CSSD daemon is started in clustered mode
+2016-10-18 17:26:23.095: 
+[ohasd(4233)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-18 17:26:23.130: 
+[ohasd(4233)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-18 17:26:44.498: 
+[cssd(4742)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2016-10-18 17:26:46.769: 
+[cssd(4742)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-18 17:26:46.911: 
+[cssd(4742)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-18 17:26:47.170: 
+[cssd(4742)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-18 17:26:53.671: 
+[cssd(4742)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+2016-10-18 17:26:55.587: 
+[ctssd(4930)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node1.
+2016-10-18 17:26:55.587: 
+[ctssd(4930)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2016-10-18 17:26:57.272: 
+[ohasd(4233)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-18 17:26:57.272: 
+[ohasd(4233)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+[client(4988)]CRS-10001:18-Oct-16 17:27 ACFS-9391: Checking for existing ADVM/ACFS installation.
+[client(5103)]CRS-10001:18-Oct-16 17:27 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5105)]CRS-10001:18-Oct-16 17:27 ACFS-9393: Verifying ASM Administrator setup.
+[client(5108)]CRS-10001:18-Oct-16 17:27 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5111)]CRS-10001:18-Oct-16 17:27 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5122)]CRS-10001:18-Oct-16 17:27 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5140)]CRS-10001:18-Oct-16 17:27 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(5226)]CRS-10001:18-Oct-16 17:27 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(5229)]CRS-10001:18-Oct-16 17:27 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(5233)]CRS-10001:18-Oct-16 17:27 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(5242)]CRS-10001:18-Oct-16 17:27 ACFS-9322: completed
+2016-10-18 17:27:34.151: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4652)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:27:52.887: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(4652)]CRS-5011:Check of resource "+ASM" failed: details at "(:CLSN00006:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/ohasd/oraagent_grid/oraagent_grid.log"
+2016-10-18 17:29:44.601: 
+[crsd(5877)]CRS-1012:The OCR service started on node node1.
+2016-10-18 17:29:44.808: 
+[evmd(4952)]CRS-1401:EVMD started on node node1.
+2016-10-18 17:29:47.854: 
+[crsd(5877)]CRS-1201:CRSD started on node node1.
+2016-10-18 17:29:51.576: 
+[/u01/app/11.2.0.4/grid/bin/oraagent.bin(6033)]CRS-5011:Check of resource "svcg" failed: details at "(:CLSN00007:)" in "/u01/app/11.2.0.4/grid/log/node1/agent/crsd/oraagent_oracle/oraagent_oracle.log"
+2016-10-18 17:29:53.944: 
+[crsd(5877)]CRS-2772:Server 'node1' has been assigned to pool 'Generic'.
+2016-10-18 17:29:53.970: 
+[crsd(5877)]CRS-2772:Server 'node1' has been assigned to pool 'ora.svcg'.
+2016-10-18 17:29:56.188: 
+[client(6244)]CRS-4743:File /u01/app/11.2.0.4/grid/oc4j/j2ee/home/OC4J_DBWLM_config/system-jazn-data.xml was updated from OCR(Size: 13365(New), 13378(Old) bytes)
+[client(6579)]CRS-10001:18-Oct-16 17:30 ACFS-9105: Volume 'ASFSARCH' not found in 'ORAARCH'.
+[client(6581)]CRS-10001:18-Oct-16 17:30 ACFS-9257: Mounting device '/dev/asm/acfsarc-203' on mount point '/acfsarch'.
+[client(6620)]CRS-10001:18-Oct-16 17:30 ACFS-9257: Mounting device '/dev/asm/asfsarch-395' on mount point '/u01/app/grid/acfsmounts/arch'.
+2016-10-18 17:31:31.448: 
+[crsd(5877)]CRS-2772:Server 'node2' has been assigned to pool 'Generic'.
+2016-10-18 17:31:31.448: 
+[crsd(5877)]CRS-2772:Server 'node2' has been assigned to pool 'ora.svcg'.
+[client(21260)]CRS-10001:18-Oct-16 19:00 ACFS-9251: Mount point '/u01/app/grid/acfsmounts/arch' unmounted.
+[client(21271)]CRS-10001:18-Oct-16 19:00 ACFS-9251: Mount point '/acfsarch' unmounted.
+2016-10-18 19:00:38.618: 
+[cssd(4742)]CRS-1625:Node node2, number 2, was manually shut down
+2016-10-18 19:00:38.621: 
+[cssd(4742)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 .
+2016-10-18 19:00:38.639: 
+[crsd(5877)]CRS-5504:Node down event reported for node 'node2'.
+2016-10-18 19:00:38.692: 
+[crsd(5877)]CRS-2773:Server 'node2' has been removed from pool 'Generic'.
+2016-10-18 19:00:38.693: 
+[crsd(5877)]CRS-2773:Server 'node2' has been removed from pool 'ora.svcg'.
+2016-10-18 19:00:39.463: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(6029)]CRS-5822:Agent '/u01/app/11.2.0.4/grid/bin/orarootagent_root' disconnected from server. Details at (:CRSAGF00117:) {0:3:227} in /u01/app/11.2.0.4/grid/log/node1/agent/crsd/orarootagent_root/orarootagent_root.log.
+2016-10-18 19:00:40.481: 
+[mdnsd(4663)]CRS-5602:mDNS service stopping by request.
+2016-10-18 19:00:40.483: 
+[ctssd(4930)]CRS-2405:The Cluster Time Synchronization Service on host node1 is shutdown by user
+[client(21421)]CRS-10001:18-Oct-16 19:00 ACFS-9290: Waiting for ASM to shutdown.
+2016-10-18 19:00:53.514: 
+[cssd(4742)]CRS-1603:CSSD on node node1 shutdown by user.
+2016-10-18 19:00:53.758: 
+[ohasd(4233)]CRS-2767:Resource state recovery not attempted for 'ora.cssdmonitor' as its target state is OFFLINE
+2016-10-18 19:00:53.758: 
+[ohasd(4233)]CRS-2769:Unable to failover resource 'ora.cssdmonitor'.
+2016-10-18 19:00:59.910: 
+[gpnpd(4674)]CRS-2329:GPNPD on node node1 shutdown. 
+2016-10-19 17:35:38.002: 
+[ohasd(4298)]CRS-2112:The OLR service started on node node1.
+2016-10-19 17:35:39.766: 
+[ohasd(4298)]CRS-1301:Oracle High Availability Service started on node node1.
+2016-10-19 17:35:40.028: 
+[ohasd(4298)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2016-10-19 17:36:09.731: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4616)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-19 17:36:15.304: 
+[ohasd(4298)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-19 17:36:15.527: 
+[gpnpd(4739)]CRS-2328:GPNPD started on node node1. 
+2016-10-19 17:36:18.755: 
+[cssd(4808)]CRS-1713:CSSD daemon is started in clustered mode
+2016-10-19 17:36:19.939: 
+[ohasd(4298)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-19 17:36:19.955: 
+[ohasd(4298)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-19 17:36:41.710: 
+[cssd(4808)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2016-10-19 17:36:43.719: 
+[cssd(4808)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:36:44.718: 
+[cssd(4808)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:36:44.959: 
+[cssd(4808)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:36:56.262: 
+[cssd(4808)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+2016-10-19 17:37:00.051: 
+[ctssd(4995)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2016-10-19 17:37:00.051: 
+[ctssd(4995)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node2.
+2016-10-19 17:37:00.351: 
+[ohasd(4298)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-19 17:37:00.351: 
+[ohasd(4298)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-19 17:37:05.123: 
+[ctssd(4995)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+[client(5131)]CRS-10001:19-Oct-16 17:37 ACFS-9391: Checking for existing ADVM/ACFS installation.
+[client(6820)]CRS-10001:19-Oct-16 17:44 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(6822)]CRS-10001:19-Oct-16 17:44 ACFS-9393: Verifying ASM Administrator setup.
+[client(6831)]CRS-10001:19-Oct-16 17:44 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(6834)]CRS-10001:19-Oct-16 17:44 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(6980)]CRS-10001:19-Oct-16 17:44 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(7013)]CRS-10001:19-Oct-16 17:44 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(7270)]CRS-10001:19-Oct-16 17:45 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(7278)]CRS-10001:19-Oct-16 17:45 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(7282)]CRS-10001:19-Oct-16 17:45 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(7288)]CRS-10001:19-Oct-16 17:45 ACFS-9322: completed
+2016-10-19 17:45:38.535: 
+[ohasd(4298)]CRS-2765:Resource 'ora.crf' has failed on server 'node1'.
+2016-10-19 17:51:41.888: 
+[ohasd(4331)]CRS-2112:The OLR service started on node node1.
+2016-10-19 17:51:43.259: 
+[ohasd(4331)]CRS-1301:Oracle High Availability Service started on node node1.
+2016-10-19 17:51:43.979: 
+[ohasd(4331)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2016-10-19 17:52:03.459: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4649)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-19 17:52:07.317: 
+[ohasd(4331)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-19 17:52:08.003: 
+[gpnpd(4766)]CRS-2328:GPNPD started on node node1. 
+2016-10-19 17:52:10.332: 
+[cssd(4839)]CRS-1713:CSSD daemon is started in clustered mode
+2016-10-19 17:52:11.684: 
+[ohasd(4331)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-19 17:52:11.758: 
+[ohasd(4331)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-19 17:52:35.532: 
+[cssd(4839)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2016-10-19 17:52:38.888: 
+[cssd(4839)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:52:39.173: 
+[cssd(4839)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:52:39.407: 
+[cssd(4839)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-19 17:53:22.622: 
+[cssd(4839)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+2016-10-19 17:53:25.505: 
+[ctssd(5195)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2016-10-19 17:53:25.505: 
+[ctssd(5195)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node2.
+2016-10-19 17:53:27.052: 
+[ohasd(4331)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-19 17:53:27.052: 
+[ohasd(4331)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-19 17:53:29.503: 
+[ctssd(5195)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+[client(5307)]CRS-10001:19-Oct-16 17:53 ACFS-9391: Checking for existing ADVM/ACFS installation.
+[client(5615)]CRS-10001:19-Oct-16 17:54 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5617)]CRS-10001:19-Oct-16 17:54 ACFS-9393: Verifying ASM Administrator setup.
+[client(5620)]CRS-10001:19-Oct-16 17:54 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5623)]CRS-10001:19-Oct-16 17:54 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5640)]CRS-10001:19-Oct-16 17:54 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5673)]CRS-10001:19-Oct-16 17:55 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(5762)]CRS-10001:19-Oct-16 17:55 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(5764)]CRS-10001:19-Oct-16 17:55 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(5768)]CRS-10001:19-Oct-16 17:55 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(5779)]CRS-10001:19-Oct-16 17:55 ACFS-9322: completed
+2016-10-19 18:01:51.490: 
+[crsd(7735)]CRS-1012:The OCR service started on node node1.
+2016-10-19 18:01:51.607: 
+[evmd(5227)]CRS-1401:EVMD started on node node1.
+2016-10-19 18:01:58.152: 
+[crsd(7735)]CRS-1201:CRSD started on node node1.
+2016-10-19 18:02:16.977: 
+[crsd(7735)]CRS-2772:Server 'node1' has been assigned to pool 'Generic'.
+2016-10-19 18:02:16.999: 
+[crsd(7735)]CRS-2772:Server 'node1' has been assigned to pool 'ora.svcg'.
+2016-10-19 18:02:18.118: 
+[client(8259)]CRS-4743:File /u01/app/11.2.0.4/grid/oc4j/j2ee/home/OC4J_DBWLM_config/system-jazn-data.xml was updated from OCR(Size: 13365(New), 13378(Old) bytes)
+[client(8524)]CRS-10001:19-Oct-16 18:02 ACFS-9105: Volume 'ASFSARCH' not found in 'ORAARCH'.
+[client(8526)]CRS-10001:19-Oct-16 18:02 ACFS-9257: Mounting device '/dev/asm/acfsarc-203' on mount point '/acfsarch'.
+[client(8622)]CRS-10001:19-Oct-16 18:02 ACFS-9257: Mounting device '/dev/asm/asfsarch-395' on mount point '/u01/app/grid/acfsmounts/arch'.
+2016-10-19 18:05:11.928: 
+[crsd(7735)]CRS-2772:Server 'node2' has been assigned to pool 'Generic'.
+2016-10-19 18:05:11.928: 
+[crsd(7735)]CRS-2772:Server 'node2' has been assigned to pool 'ora.svcg'.
+2016-10-19 18:34:43.488: 
+[ctssd(5195)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+[client(32335)]CRS-10001:19-Oct-16 19:10 ACFS-9251: Mount point '/u01/app/grid/acfsmounts/arch' unmounted.
+[client(32348)]CRS-10001:19-Oct-16 19:10 ACFS-9251: Mount point '/acfsarch' unmounted.
+2016-10-19 19:10:39.529: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(7952)]CRS-5822:Agent '/u01/app/11.2.0.4/grid/bin/orarootagent_root' disconnected from server. Details at (:CRSAGF00117:) {0:3:11} in /u01/app/11.2.0.4/grid/log/node1/agent/crsd/orarootagent_root/orarootagent_root.log.
+[client(32487)]CRS-10001:19-Oct-16 19:10 ACFS-9290: Waiting for ASM to shutdown.
+2016-10-19 19:10:40.584: 
+[mdnsd(4753)]CRS-5602:mDNS service stopping by request.
+2016-10-19 19:10:40.587: 
+[ctssd(5195)]CRS-2405:The Cluster Time Synchronization Service on host node1 is shutdown by user
+2016-10-19 19:10:41.413: 
+[ctssd(5195)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node1.
+2016-10-19 19:10:49.746: 
+[cssd(4839)]CRS-1625:Node node2, number 2, was manually shut down
+2016-10-19 19:10:49.748: 
+[cssd(4839)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 .
+2016-10-19 19:10:53.635: 
+[cssd(4839)]CRS-1603:CSSD on node node1 shutdown by user.
+2016-10-19 19:10:53.744: 
+[ohasd(4331)]CRS-2767:Resource state recovery not attempted for 'ora.cssdmonitor' as its target state is OFFLINE
+2016-10-19 19:10:53.744: 
+[ohasd(4331)]CRS-2769:Unable to failover resource 'ora.cssdmonitor'.
+2016-10-19 19:10:56.034: 
+[gpnpd(4766)]CRS-2329:GPNPD on node node1 shutdown. 
+2016-10-27 04:30:02.466: 
+[ohasd(4303)]CRS-2112:The OLR service started on node node1.
+2016-10-27 04:30:03.362: 
+[ohasd(4303)]CRS-1301:Oracle High Availability Service started on node node1.
+2016-10-27 04:30:03.440: 
+[ohasd(4303)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2016-10-27 04:30:31.187: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4624)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-27 04:30:40.708: 
+[ohasd(4303)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-10-27 04:30:41.163: 
+[gpnpd(4747)]CRS-2328:GPNPD started on node node1. 
+2016-10-27 04:30:44.901: 
+[cssd(4816)]CRS-1713:CSSD daemon is started in clustered mode
+2016-10-27 04:30:46.263: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-27 04:30:46.276: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-10-27 04:31:09.926: 
+[cssd(4816)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2016-10-27 04:31:11.749: 
+[cssd(4816)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-27 04:31:12.035: 
+[cssd(4816)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-27 04:31:12.208: 
+[cssd(4816)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-10-27 04:31:28.317: 
+[cssd(4816)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+2016-10-27 04:31:31.668: 
+[ctssd(5132)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2016-10-27 04:31:31.669: 
+[ctssd(5132)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node1.
+2016-10-27 04:31:32.134: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-10-27 04:31:32.134: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+[client(5189)]CRS-10001:27-Oct-16 04:31 ACFS-9391: Checking for existing ADVM/ACFS installation.
+[client(5947)]CRS-10001:27-Oct-16 04:34 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5949)]CRS-10001:27-Oct-16 04:34 ACFS-9393: Verifying ASM Administrator setup.
+[client(5952)]CRS-10001:27-Oct-16 04:34 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5955)]CRS-10001:27-Oct-16 04:34 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5967)]CRS-10001:27-Oct-16 04:34 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5993)]CRS-10001:27-Oct-16 04:35 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(6061)]CRS-10001:27-Oct-16 04:35 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(6063)]CRS-10001:27-Oct-16 04:35 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(6072)]CRS-10001:27-Oct-16 04:35 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(6077)]CRS-10001:27-Oct-16 04:35 ACFS-9322: completed
+2016-10-27 04:35:06.767: 
+[ohasd(4303)]CRS-2807:Resource 'ora.asm' failed to start automatically.
+2016-10-27 04:35:06.767: 
+[ohasd(4303)]CRS-2807:Resource 'ora.crsd' failed to start automatically.
+2016-10-27 04:35:06.783: 
+[mdnsd(4736)]CRS-5602:mDNS service stopping by request.
+2016-10-27 04:35:06.786: 
+[ctssd(5132)]CRS-2405:The Cluster Time Synchronization Service on host node1 is shutdown by user
+2016-10-27 04:35:16.170: 
+[cssd(4816)]CRS-1603:CSSD on node node1 shutdown by user.
+2016-10-27 04:35:16.955: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.cssdmonitor' as its target state is OFFLINE
+2016-10-27 04:35:16.955: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.cssdmonitor'.
+2016-10-27 04:35:19.598: 
+[gpnpd(4747)]CRS-2329:GPNPD on node node1 shutdown. 
+2016-11-16 16:57:51.861: 
+[ohasd(4303)]CRS-2112:The OLR service started on node node1.
+2016-11-16 16:57:54.095: 
+[ohasd(4303)]CRS-1301:Oracle High Availability Service started on node node1.
+2016-11-16 16:57:54.592: 
+[ohasd(4303)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2016-11-16 16:58:12.423: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4622)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-11-16 16:58:19.458: 
+[ohasd(4303)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2016-11-16 16:58:19.958: 
+[gpnpd(4740)]CRS-2328:GPNPD started on node node1. 
+2016-11-16 16:58:22.660: 
+[cssd(4814)]CRS-1713:CSSD daemon is started in clustered mode
+2016-11-16 16:58:23.950: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-11-16 16:58:23.979: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2016-11-16 16:58:47.699: 
+[cssd(4814)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2016-11-16 16:58:49.776: 
+[cssd(4814)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-11-16 16:58:50.103: 
+[cssd(4814)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-11-16 16:58:50.828: 
+[cssd(4814)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2016-11-16 16:59:01.016: 
+[cssd(4814)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 .
+2016-11-16 16:59:03.617: 
+[ctssd(5025)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2016-11-16 16:59:03.617: 
+[ctssd(5025)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node1.
+2016-11-16 16:59:05.328: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2016-11-16 16:59:05.328: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+[client(5130)]CRS-10001:16-Nov-16 16:59 ACFS-9391: Checking for existing ADVM/ACFS installation.
+2016-11-16 16:59:24.448: 
+[cssd(4814)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+[client(5337)]CRS-10001:16-Nov-16 16:59 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5339)]CRS-10001:16-Nov-16 16:59 ACFS-9393: Verifying ASM Administrator setup.
+[client(5342)]CRS-10001:16-Nov-16 16:59 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5345)]CRS-10001:16-Nov-16 16:59 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5357)]CRS-10001:16-Nov-16 16:59 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5378)]CRS-10001:16-Nov-16 16:59 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(5451)]CRS-10001:16-Nov-16 16:59 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(5453)]CRS-10001:16-Nov-16 16:59 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(5457)]CRS-10001:16-Nov-16 16:59 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(5472)]CRS-10001:16-Nov-16 16:59 ACFS-9322: completed
+2016-11-16 17:00:51.801: 
+[ohasd(4303)]CRS-2807:Resource 'ora.crsd' failed to start automatically.
+2016-11-16 17:00:51.867: 
+[mdnsd(4725)]CRS-5602:mDNS service stopping by request.
+[client(5953)]CRS-10001:16-Nov-16 17:00 ACFS-9290: Waiting for ASM to shutdown.
+2016-11-16 17:01:03.823: 
+[ctssd(5025)]CRS-2405:The Cluster Time Synchronization Service on host node1 is shutdown by user
+2016-11-16 17:01:10.199: 
+[cssd(4814)]CRS-1603:CSSD on node node1 shutdown by user.
+2016-11-16 17:01:10.307: 
+[ohasd(4303)]CRS-2767:Resource state recovery not attempted for 'ora.cssdmonitor' as its target state is OFFLINE
+2016-11-16 17:01:10.307: 
+[ohasd(4303)]CRS-2769:Unable to failover resource 'ora.cssdmonitor'.
+2016-11-16 17:01:12.591: 
+[gpnpd(4740)]CRS-2329:GPNPD on node node1 shutdown. 
+2017-05-11 04:53:28.189: 
+[ohasd(4294)]CRS-2112:The OLR service started on node node1.
+2017-05-11 04:53:30.246: 
+[ohasd(4294)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2017-05-11 04:53:30.126: 
+[ohasd(4294)]CRS-1301:Oracle High Availability Service started on node node1.
+2017-05-11 04:53:57.176: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4612)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2017-05-11 04:54:25.402: 
+[ohasd(4294)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2017-05-11 04:54:27.154: 
+[gpnpd(4734)]CRS-2328:GPNPD started on node node1. 
+2017-05-11 04:54:31.688: 
+[cssd(4802)]CRS-1713:CSSD daemon is started in clustered mode
+2017-05-11 04:54:32.182: 
+[ohasd(4294)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2017-05-11 04:54:32.190: 
+[ohasd(4294)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2017-05-11 04:55:02.098: 
+[cssd(4802)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2017-05-11 04:55:05.821: 
+[cssd(4802)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 04:55:09.605: 
+[cssd(4802)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 04:55:11.209: 
+[cssd(4802)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 04:55:21.430: 
+[cssd(4802)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 .
+2017-05-11 04:55:25.494: 
+[ohasd(4294)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2017-05-11 04:55:25.494: 
+[ohasd(4294)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2017-05-11 04:55:25.721: 
+[ctssd(5040)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2017-05-11 04:55:25.721: 
+[ctssd(5040)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node1.
+[client(5088)]CRS-10001:11-May-17 04:55 ACFS-9391: Checking for existing ADVM/ACFS installation.
+2017-05-11 04:56:35.786: 
+[cssd(4802)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+[client(5517)]CRS-10001:11-May-17 04:56 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5519)]CRS-10001:11-May-17 04:56 ACFS-9393: Verifying ASM Administrator setup.
+[client(5522)]CRS-10001:11-May-17 04:56 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5525)]CRS-10001:11-May-17 04:56 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5536)]CRS-10001:11-May-17 04:56 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5560)]CRS-10001:11-May-17 04:56 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(5631)]CRS-10001:11-May-17 04:56 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(5635)]CRS-10001:11-May-17 04:56 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(5642)]CRS-10001:11-May-17 04:56 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(5647)]CRS-10001:11-May-17 04:56 ACFS-9322: completed
+2017-05-11 04:57:40.578: 
+[crsd(5931)]CRS-1012:The OCR service started on node node1.
+2017-05-11 04:57:41.138: 
+[evmd(5061)]CRS-1401:EVMD started on node node1.
+2017-05-11 04:57:43.259: 
+[crsd(5931)]CRS-1201:CRSD started on node node1.
+2017-05-11 04:57:54.887: 
+[crsd(5931)]CRS-2772:Server 'node1' has been assigned to pool 'Generic'.
+2017-05-11 04:57:54.917: 
+[crsd(5931)]CRS-2772:Server 'node1' has been assigned to pool 'ora.svcg'.
+[client(6712)]CRS-10001:11-May-17 04:58 ACFS-9105: Volume 'ASFSARCH' not found in 'ORAARCH'.
+[client(6714)]CRS-10001:11-May-17 04:58 ACFS-9257: Mounting device '/dev/asm/acfsarc-203' on mount point '/acfsarch'.
+[client(6761)]CRS-10001:11-May-17 04:58 ACFS-9257: Mounting device '/dev/asm/asfsarch-395' on mount point '/u01/app/grid/acfsmounts/arch'.
+2017-05-11 04:59:27.148: 
+[crsd(5931)]CRS-2772:Server 'node2' has been assigned to pool 'Generic'.
+2017-05-11 04:59:27.149: 
+[crsd(5931)]CRS-2772:Server 'node2' has been assigned to pool 'ora.svcg'.
+2017-05-11 05:00:17.525: 
+[crsd(5931)]CRS-2807:Resource 'ora.svcg.db' failed to start automatically.
+2017-05-11 05:00:17.525: 
+[crsd(5931)]CRS-2807:Resource 'ora.svcg.db' failed to start automatically.
+[client(9474)]CRS-10001:11-May-17 05:03 ACFS-9251: Mount point '/u01/app/grid/acfsmounts/arch' unmounted.
+[client(9496)]CRS-10001:11-May-17 05:03 ACFS-9251: Mount point '/acfsarch' unmounted.
+2017-05-11 05:04:04.671: 
+[cssd(4802)]CRS-1625:Node node2, number 2, was manually shut down
+2017-05-11 05:04:04.675: 
+[cssd(4802)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 .
+2017-05-11 05:04:04.802: 
+[crsd(5931)]CRS-5504:Node down event reported for node 'node2'.
+2017-05-11 05:04:05.017: 
+[crsd(5931)]CRS-2773:Server 'node2' has been removed from pool 'Generic'.
+2017-05-11 05:04:05.017: 
+[crsd(5931)]CRS-2773:Server 'node2' has been removed from pool 'ora.svcg'.
+2017-05-11 05:04:09.279: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(6144)]CRS-5822:Agent '/u01/app/11.2.0.4/grid/bin/orarootagent_root' disconnected from server. Details at (:CRSAGF00117:) {0:3:9} in /u01/app/11.2.0.4/grid/log/node1/agent/crsd/orarootagent_root/orarootagent_root.log.
+2017-05-11 05:04:10.255: 
+[ctssd(5040)]CRS-2405:The Cluster Time Synchronization Service on host node1 is shutdown by user
+2017-05-11 05:04:10.256: 
+[mdnsd(4717)]CRS-5602:mDNS service stopping by request.
+[client(9640)]CRS-10001:11-May-17 05:04 ACFS-9290: Waiting for ASM to shutdown.
+2017-05-11 05:04:24.390: 
+[cssd(4802)]CRS-1603:CSSD on node node1 shutdown by user.
+2017-05-11 05:04:24.497: 
+[ohasd(4294)]CRS-2767:Resource state recovery not attempted for 'ora.cssdmonitor' as its target state is OFFLINE
+2017-05-11 05:04:24.497: 
+[ohasd(4294)]CRS-2769:Unable to failover resource 'ora.cssdmonitor'.
+2017-05-11 05:04:32.200: 
+[gpnpd(4734)]CRS-2329:GPNPD on node node1 shutdown. 
+2017-05-11 05:07:19.643: 
+[ohasd(4291)]CRS-2112:The OLR service started on node node1.
+2017-05-11 05:07:20.847: 
+[ohasd(4291)]CRS-1301:Oracle High Availability Service started on node node1.
+2017-05-11 05:07:21.305: 
+[ohasd(4291)]CRS-8017:location: /etc/oracle/lastgasp has 2 reboot advisory log files, 0 were announced and 0 errors occurred
+2017-05-11 05:07:40.690: 
+[/u01/app/11.2.0.4/grid/bin/orarootagent.bin(4636)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2017-05-11 05:07:43.977: 
+[ohasd(4291)]CRS-2302:Cannot get GPnP profile. Error CLSGPNP_NO_DAEMON (GPNPD daemon is not running). 
+2017-05-11 05:07:44.223: 
+[gpnpd(4760)]CRS-2328:GPNPD started on node node1. 
+2017-05-11 05:07:46.646: 
+[cssd(4828)]CRS-1713:CSSD daemon is started in clustered mode
+2017-05-11 05:07:48.282: 
+[ohasd(4291)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2017-05-11 05:07:48.297: 
+[ohasd(4291)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2017-05-11 05:08:34.292: 
+[cssd(4828)]CRS-1707:Lease acquisition for node node1 number 1 completed
+2017-05-11 05:08:36.502: 
+[cssd(4828)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE3; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 05:08:36.744: 
+[cssd(4828)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE2; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 05:08:36.844: 
+[cssd(4828)]CRS-1605:CSSD voting file is online: ORCL:ASMVOTE1; details in /u01/app/11.2.0.4/grid/log/node1/cssd/ocssd.log.
+2017-05-11 05:08:43.375: 
+[cssd(4828)]CRS-1601:CSSD Reconfiguration complete. Active nodes are node1 node2 .
+2017-05-11 05:08:46.566: 
+[ctssd(5123)]CRS-2407:The new Cluster Time Synchronization Service reference node is host node2.
+2017-05-11 05:08:46.566: 
+[ctssd(5123)]CRS-2401:The Cluster Time Synchronization Service started on host node1.
+2017-05-11 05:08:47.113: 
+[ohasd(4291)]CRS-2767:Resource state recovery not attempted for 'ora.diskmon' as its target state is OFFLINE
+2017-05-11 05:08:47.113: 
+[ohasd(4291)]CRS-2769:Unable to failover resource 'ora.diskmon'.
+2017-05-11 05:08:52.594: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+[client(5174)]CRS-10001:11-May-17 05:08 ACFS-9391: Checking for existing ADVM/ACFS installation.
+[client(5297)]CRS-10001:11-May-17 05:09 ACFS-9392: Validating ADVM/ACFS installation files for operating system.
+[client(5299)]CRS-10001:11-May-17 05:09 ACFS-9393: Verifying ASM Administrator setup.
+[client(5302)]CRS-10001:11-May-17 05:09 ACFS-9308: Loading installed ADVM/ACFS drivers.
+[client(5305)]CRS-10001:11-May-17 05:09 ACFS-9154: Loading 'oracleoks.ko' driver.
+[client(5316)]CRS-10001:11-May-17 05:09 ACFS-9154: Loading 'oracleadvm.ko' driver.
+[client(5341)]CRS-10001:11-May-17 05:09 ACFS-9154: Loading 'oracleacfs.ko' driver.
+[client(5409)]CRS-10001:11-May-17 05:09 ACFS-9327: Verifying ADVM/ACFS devices.
+[client(5414)]CRS-10001:11-May-17 05:09 ACFS-9156: Detecting control device '/dev/asm/.asm_ctl_spec'.
+[client(5418)]CRS-10001:11-May-17 05:09 ACFS-9156: Detecting control device '/dev/ofsctl'.
+[client(5423)]CRS-10001:11-May-17 05:09 ACFS-9322: completed
+2017-05-11 05:09:58.356: 
+[crsd(5636)]CRS-1012:The OCR service started on node node1.
+2017-05-11 05:09:59.787: 
+[evmd(5152)]CRS-1401:EVMD started on node node1.
+2017-05-11 05:10:01.608: 
+[crsd(5636)]CRS-1201:CRSD started on node node1.
+[client(6126)]CRS-10001:11-May-17 05:10 ACFS-9105: Volume 'ASFSARCH' not found in 'ORAARCH'.
+[client(6128)]CRS-10001:11-May-17 05:10 ACFS-9257: Mounting device '/dev/asm/acfsarc-203' on mount point '/acfsarch'.
+[client(6177)]CRS-10001:11-May-17 05:10 ACFS-9257: Mounting device '/dev/asm/asfsarch-395' on mount point '/u01/app/grid/acfsmounts/arch'.
+2017-05-11 05:41:58.384: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 06:22:39.411: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 08:08:41.941: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 09:03:23.316: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 10:03:00.762: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 11:13:58.522: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 11:57:59.592: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 12:36:32.550: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 13:08:01.308: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 13:54:02.417: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 14:38:59.520: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 15:18:20.491: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 16:11:41.872: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 16:53:02.915: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 17:43:04.200: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 18:15:29.075: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 18:51:37.981: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 19:31:46.973: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 20:36:04.582: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 22:02:22.711: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 22:36:15.555: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 23:10:16.402: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-11 23:43:53.254: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 00:20:18.199: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 01:08:19.375: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 01:57:08.633: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 03:21:18.686: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 03:59:59.626: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 04:45:20.808: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 05:15:29.579: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 07:04:44.327: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 08:27:02.347: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 09:10:23.419: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 09:54:16.519: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 10:32:17.453: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 11:10:26.382: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 12:45:48.785: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 13:45:18.232: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 14:16:22.990: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 14:47:51.755: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 15:32:56.845: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 17:00:19.021: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 17:38:27.960: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 18:19:48.967: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 18:51:25.799: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 20:18:55.994: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 21:30:25.747: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 22:02:10.527: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 22:37:47.428: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 23:23:24.545: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-12 23:58:13.443: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 01:16:15.408: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 01:48:56.214: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 02:20:40.990: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 03:09:30.251: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 04:15:31.887: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 04:46:36.659: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 05:21:33.520: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 05:59:42.444: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 06:44:07.543: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 07:43:29.042: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 08:18:33.908: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 08:54:34.850: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 09:27:39.689: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 10:01:40.542: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 11:06:14.137: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 12:22:40.039: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 13:53:38.268: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 14:35:39.308: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 15:34:12.794: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 16:08:53.650: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 16:55:34.796: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 17:25:59.553: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 18:05:12.539: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 18:43:37.502: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 19:39:14.876: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 20:44:04.468: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 21:16:37.292: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 21:47:10.036: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 22:20:30.861: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 22:54:15.714: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-13 23:44:16.937: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 01:11:07.072: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 02:01:48.334: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 02:39:49.320: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 03:10:30.087: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 03:45:34.973: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 04:38:00.252: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 05:12:33.124: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 05:46:33.970: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 06:17:06.849: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 07:14:52.300: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 08:15:09.827: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 09:06:07.085: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 09:58:24.367: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 11:02:57.925: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 12:01:47.416: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 12:45:08.496: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 13:41:25.915: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 14:28:15.184: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 15:41:29.029: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 16:56:18.906: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 17:47:48.194: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 18:23:01.102: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 19:18:06.487: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 19:53:59.408: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 20:32:08.344: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 21:18:33.480: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 22:28:51.205: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 23:10:52.286: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-14 23:48:21.235: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 01:14:23.429: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 01:59:04.525: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 02:53:37.879: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 03:45:31.181: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 04:49:00.843: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 05:41:10.136: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 06:17:19.049: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 07:02:16.186: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 08:38:42.531: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 09:12:03.347: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 09:58:12.499: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 10:46:05.697: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 11:30:14.805: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 12:02:31.662: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 13:01:29.124: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 13:52:58.372: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 14:32:03.377: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 15:33:08.885: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 16:18:22.046: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 17:01:19.135: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 17:40:24.138: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 18:40:57.632: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 19:42:51.155: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 20:30:52.418: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 21:10:29.402: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 21:57:58.590: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 22:34:39.680: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-15 23:27:21.021: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 00:05:22.001: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 00:59:55.380: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 02:16:13.316: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 03:51:27.669: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 05:04:25.493: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 05:41:06.380: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 06:39:15.835: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 07:12:28.661: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 07:46:53.529: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 08:39:42.817: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 09:19:19.837: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 10:54:58.199: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 12:16:04.211: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 13:01:41.328: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 14:01:18.776: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 14:40:47.780: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 16:11:22.020: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 16:54:19.084: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 18:12:28.996: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 18:43:25.775: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 19:14:54.548: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 20:28:48.352: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 21:06:41.316: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 22:00:34.642: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 22:51:31.930: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-16 23:54:13.511: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 01:08:39.345: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 01:45:12.237: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 02:35:45.539: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 03:30:34.875: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 04:05:23.734: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 05:11:25.388: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 05:57:58.597: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 06:53:43.965: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 07:25:28.736: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 08:18:50.038: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 08:51:54.873: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 10:02:20.623: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 10:42:53.596: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 11:19:26.557: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 12:09:51.794: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 13:06:33.191: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 15:08:36.252: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 15:50:53.312: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 16:33:02.409: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 17:15:27.442: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 18:03:20.667: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 18:39:13.562: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 19:22:58.871: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 20:47:48.952: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 21:32:14.068: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 22:02:30.927: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 22:46:00.013: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-17 23:24:56.993: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 00:30:58.657: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 01:24:03.975: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 02:47:34.077: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 03:33:35.244: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 04:25:04.512: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 05:11:37.725: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 05:54:50.771: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 07:06:52.603: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 07:49:01.622: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 08:27:50.564: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 09:16:31.800: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 11:00:50.363: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 11:36:11.226: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 12:19:16.377: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 12:56:53.348: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 13:39:10.404: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 14:35:43.815: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 16:20:58.372: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
+2017-05-18 16:53:01.641: 
+[ctssd(5123)]CRS-2408:The clock on host node1 has been updated by the Cluster Time Synchronization Service to be synchronous with the mean cluster time.
