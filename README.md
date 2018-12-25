@@ -1,3 +1,8 @@
+# Disclaimer
+
+This Script is developed by Mr. Suman Adhikari for own day to day tasks and all the demo below listed are ran on my own RnD env. Any harm by running the script to their respectiv env by anyone is not the under my responsibility.. One can fork, download and customize in their onw way...
+
+
 # Oracle Database Health Check Script Unix Platforms.
 
 The script is designed to collect logs and metrics from O/S, Database Instance and Clusterware if exits. The script is interactive so it prompts input from the user. It also generates AWR/ADDM reports for 24 hrs, from stript fired time minus 24. 
